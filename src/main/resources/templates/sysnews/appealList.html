@@ -1,0 +1,125 @@
+<#include "../layout/layout.html">
+<@layout>
+<#include "menu.html"/><link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<style>
+	.dl_width158 {
+		width: 300px;
+		height: 30px;
+		float: left;
+	}
+		
+	.dl_w_two {
+		width: 200px
+	}
+	.tdpd{
+		padding: 0px 0px 0px 5px!important
+	}
+	.td{
+		padding: 0px!important
+	}
+	.biaoge tr {
+		font-size: 12px;
+		height: 30px;
+		 line-height: 18px;
+	}
+</style>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">申诉管理<!--<a href="tianjiayonghu.html"><input  style="padding:6px 10px;"type="button" value="添加账户"class="top_button"/></a>--></h1>
+                <div class="dl_blue"></div>
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    <div class="user_canshu">
+	                    <table style="width:99%" id="newsTable" border="1" cellspacing="1" cellpadding="1" class="biaoge">
+	                	</table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+<script>
+	$(function(){
+		$(document).attr("title","账号维护");
+	    openMenu("xtkf");//导航栏回显
+	    openAdminMenu("appealList");/*目录添加颜色*/
+	    
+	    var newsTable = $('#newsTable').DataTable({
+	        "bLengthChange": false,
+	        // 是否改变每页显示行数
+	        "searching": false,
+	        // 是否显示搜索框
+	        "processing": true,
+	        // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+	        "serverSide": true,
+	        // true表示使用后台分页
+	        "bInfo": false,
+	        "iDisplayLength": 15,
+	        autoWidth: false,
+	        sPaginationType: "first_last_numbers",
+	        // 显示首页和末页
+	        "ajax": {
+	            "url": "/sysnews/appeal/search/",
+	            // 异步传输的后端接口url
+	            "type": "GET",
+	            "data":{
+	            	type:0
+	            }
+	        },
+	        "columns": [
+	        {
+	        	// 序号
+	            title: "序号",
+	            width: "50px",
+	            "class":"align",
+	            "data": null,
+	            "render": function(data, type, full, meta) {
+	                return meta.row + 1 + meta.settings._iDisplayStart;
+	            }
+	        },
+	        {
+	            title: "申诉人",
+	            width: "90px",
+	            "class":"tdpd",
+	            data: function(e) {
+	                return "<div  style='word-break: break-word;width:85px;'>" + e.appealUsername+ "</div>";
+	            }
+	        },
+	        {
+	            title: "申诉题目",
+	            width: "500px",
+	            "class":"tdpd",
+	            data: function(e) {
+	                return "<div  style='word-break: break-word;width:485px;'>" + e.questionBody + "</div>";
+	            }
+	        },
+	        {
+	            title: "申诉结果",
+	            width: "90px",
+	            "class":"tdpd align",
+	            data: function(e) {
+	            	
+	            	if(e.appealResult == 1){
+	            		return "修改"
+	            	} else {
+	            		return "驳回"
+	            	}
+	            	
+	            	return e.sendTime;
+	            }
+	        },
+	        { title:"操作",width: "50px", "class":"td align",
+                data: function (e) {
+                    return "<a href='/sysnewsView/appeal/view?id=" + e.id + "'>查看</a>"
+                }
+	        }
+	        ]
+	    });
+	    $(newsTable.column(0).header()).css("padding","0px")
+    	$(newsTable.column(1).header()).css("padding","0px")
+    	$(newsTable.column(2).header()).css("padding","0px")
+    	$(newsTable.column(3).header()).css("padding","0px")
+    	$(newsTable.column(4).header()).css("padding","0px")
+	})
+</script>
+</@layout>

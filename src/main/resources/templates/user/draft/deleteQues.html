@@ -1,0 +1,36 @@
+<#include "../../layout/layout.html">
+
+<@layout>
+	<link type="text/css" rel="stylesheet" href="/static/ceeemall/css/caozuojilu.css">
+<!--	<script type="text/javascript" src="/static/js/examine_123.js"></script>-->
+	<#include "../menu.html"/>
+    <div class="con_right">
+        <div class="con_right_top">
+            <h1 class="dl_h1">删除题目</h1>
+            <div class="dl_blue"></div>
+        </div>
+        <div class="con_right_bottom padding_0">
+            <div class="dl_h">
+                <div class="user_canshu">
+                    <table style="width:99%" id="findTable" border="1" cellspacing="1" cellpadding="1" class="biaoge">
+                	</table>
+                	<!--<div id="examine" hidden class="p_center">
+						<a ><input id="batchBtn" type="button" value="批量入库" class="two_button"></a>
+                    </div>-->
+                    <input type="hidden" id="categoryId" name="categoryId"  value="">
+                    <div hidden id="categoryTree">
+						<ul class="ztree" id="moveTree" >
+						</ul>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    	$(function(){
+    		openMenu("grgl");
+    		openUserMenu("finddelete");
+    		//examineTable("examineTable", 0)
+        })
+    </script>
+</@layout>

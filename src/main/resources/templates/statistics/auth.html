@@ -1,0 +1,417 @@
+<#include "../layout/layout.html">
+<@layout>
+<link type="text/css" rel="stylesheet" href="/static/css/usertree/usertree.css">
+<#include "menu.html"/>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">账号管理<!--<a href="tianjiayonghu.html"><input  style="padding:6px 10px;"type="button" value="添加账户"class="top_button"/></a>--></h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    <div class="lg_con">
+                        <div class="user">
+                            <div class=" vip_accountmenu">
+                                <ul id="userTree" class="ztree">
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="user_canshu">
+                    	<input id="userId" hidden value="${userId}">
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em></em>姓名：</div>
+                                <div class="dl_w_two" id="realname"></div>
+                            </div>
+                            
+                        </div>
+						<div class="dl_w">
+                            <div class="dl_width158">
+                                <div class="dl_w_one w_80"><em></em>昵称：</div>
+                                <div class="dl_w_two" id="username"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em></em>手机号码：</div>
+                                <div class="dl_w_two" id="phoneNum"></div>
+                            </div>
+                        </div>
+                        <div class="auth dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>权限列表：</div>
+                                <div class="dl_w_two">
+	                                <select id="roleSelect" class="dl_select200">
+	                                    <option value="2">审核（含输入的权限）</option>
+	                                    <option value="3">数据（全部权限）</option>
+	                                </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="authMenu" class="auth dl_w">
+                        	<form id="authForm">
+	                            <div class="dl_width300">
+	                                <div class="dl_w_one w_80"><em>*</em>权限范围：</div>
+	                                <div class="dl_w_two">
+	                                	<a id="authTreeBtn" style="padding:5px 14px" class="two_button">弹出目录</a>
+	                                	<input style="border:0px;hieght:0px;width:0px" name="authCategoryIds" id="authCategoryIds">
+	                                </div>
+	                                <div style="padding:10px 0px 0px 100px" id="authDiv" class="dl_w_two">
+	                                </div>
+	                            </div>
+                            </form>
+                        </div>
+                        <div class="auth p_center">
+                            <input id="submitBtn" type="button" value="提交" class="two_button">
+                            <input id="returnBtn" type="button" value="返回" class="two_button hgb">
+                        </div>
+                    </div>
+                </div>
+
+		<!--导出使用树-->
+		<div hidden id="authTreeDiv">
+			<ul class="ztree" id="authTree">
+			
+			</ul>
+		</div>
+            </div>
+        </div>
+<script>
+	var showUser;
+	var oldSelect;
+	$(function(){
+		$(document).attr("title","账号维护");
+	    openMenu("htgl");//导航栏回显
+	    openAdminMenu("userinfo");/*目录添加颜色*/
+	    
+		treeInit();
+		
+		//加载树
+        queryAuthTree();
+	    
+        $("#authForm").validate({
+            rules: {
+                authCategoryIds:{
+                	required: true,
+                }
+            },
+            messages: {
+                authCategoryIds:{
+                	required: "必选",
+                }
+            }
+        })
+		
+	    $("#roleSelect").on("change", function(){
+	    	let value = $(this).val();
+	    	if(value != 3){
+	    		$("#authMenu").show()
+	    		if(oldSelect == 3){
+		    		authQues();
+	    		}
+	    	} else {
+	    		$("#authMenu").hide()
+	    		$("#authCategoryIds").val("");
+	    	}
+	    	
+	    	oldSelect = value
+	    })
+	    
+		if($("#userId").val()){
+			showUserinfo($("#userId").val())
+		}
+		
+	    $("#authTreeBtn").on("click", function(){
+	    	authQues();
+	    })
+	    
+		$("#returnBtn").on("click",function(){
+			window.location = "/statistics?userId=" + $("#userId").val()
+		})
+		
+		$("#submitBtn").on("click",function(){
+	        if ($("#authForm").valid()) {
+	        	$(this).prop("disabled", true)
+	        	$.ajax({
+					type:"put",
+					url:"/user/" + showUser.userId,
+					data:{
+						roleId:$("#roleSelect").val(),
+						authCategoryIds: $("#authCategoryIds").val()
+					},
+					success:function(result){
+						$(this).prop("disabled", false)
+	            		if(result.code == "20000"){
+	            			App.showMessage("succeed", result.message, function(){
+	            				window.location = "/statistics?userId=" + $("#userId").val()
+		        			})
+	                	} else {
+	                		App.showMessage("error", result.message)
+	                	}
+	            	},
+	            	error:function(e){
+	            		$(this).prop("disabled", false)
+	            		App.showMessage("error", "更新失败")
+	            	}
+				})
+			}
+		})
+	})
+	
+	/*导出目录方法*/
+    function authQues() {
+        $("#authTreeDiv").dialog({
+            title: "导出问题目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "确定": function () {
+                    /*拼接需要导出的目录id 字符串*/
+                    var array = "";
+                    var zTree = $.fn.zTree.getZTreeObj("authTree");
+                    var node = zTree.getCheckedNodes(true);
+                    if (node) {
+                    	var authDivText = "";
+                        for (var j in node) {
+                            if (node[j].id && node[j].id != 0) {
+                                array += node[j].id + ",";
+                            }
+
+                            authDivText += node[j].name + "</br>"
+                        }
+                        if (array != null && array != "") {
+                            array = array.substr(0, array.length - 1);
+                            $("#authCategoryIds").val(array);
+                        } else {
+							App.showMessage("error", "请选择权限范围！")
+                            return false;
+                        }
+                    }
+                    $("#authTreeDiv").dialog("close");
+                },
+                "取消": function () {
+                    $("#authTreeDiv").dialog("close");
+                    if($("#authCategoryIds").val()){
+                    	var zTree = $.fn.zTree.getZTreeObj("authTree");
+            			$.each($("#authCategoryIds").val().split(","), function(i, item){
+            				zTree.checkNode(zTree.getNodeByParam("id", item, null), true); //选中指定节点
+            			})	
+                    }
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#authTreeDiv").dialog("destroy");
+            }
+        });
+	}
+	
+	//查询目录信息方法
+    function queryAuthTree(exportTreeSetting) {
+    	/* 移动分类类目配置信息 */
+        var exportTreeSetting = {
+            check: {
+                enable: true,
+                nocheckInherit: false,
+                autoCheckTrigger: true,
+                chkboxType: {
+                    "Y": "s",
+                    "N": "s"
+                }
+            },
+            edit: {
+                enable: false
+            },
+            view: {
+                selectedMulti: true,
+                dblClickExpand: false,
+                showIcon: false,
+                showLine: true,
+                showTitle: true,
+                fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pid",
+                    rootPId: ""
+                }
+            },
+            callback: {
+                beforeClick: function (treeId, treeNode) {
+                    $("#categoryId").val(treeNode.id);
+                    return true;
+                }
+            }
+        };
+    	
+        $.ajax({
+            "type": "post",
+            "url": "/category/ztree",
+            "dataType": "json",
+            "success": function (data) {
+                zNodes = data;
+                var t = $("#authTree");
+                t = $.fn.zTree.init(t, exportTreeSetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("authTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+
+    }
+	
+	function treeInit(){
+		// 会员树setting设置
+		var setting = {
+			view:{
+				showLine:false,
+				showIcon:false
+			},
+			async:{
+				enable: true,
+				url: "/user/tree",
+				autoParam: ["userId"]
+			},
+			data: {
+				key: {
+					name: "realname"
+				},
+				simpleData: {
+					enable: true,
+					idKey: "userId",
+					pIdKey: "roleId",
+					rootPId: 0
+				}
+			},
+			callback: {
+				onAsyncError: onAsyncError,
+				onAsyncSuccess:onAsyncSuccess,
+				beforeClick: true,				// 父节点点击前事件
+				onClick:treeClick					// 父节点点击
+			}
+		};
+		
+		var data = [
+			{realname:"审核", userId:2, isParent:true},
+			{realname:"数据", userId:3, isParent:true}
+		]
+		
+		$.fn.zTree.init($("#userTree"), setting, data);
+	}
+	
+	/**
+	 * 父节点点击事件
+	 */
+	function treeClick(treeId, treeNode){
+
+		// 取得节点信息
+		var zTree = $.fn.zTree.getZTreeObj(treeNode),
+		nodes = zTree.getSelectedNodes();
+
+		// 是父类节点
+		if (nodes[0].isParent) {
+			expandNode(zTree,nodes);
+		}  else {
+			if(nodes[0].userId.indexOf("_") != -1){
+				window.location = "/statistics?userId=" + nodes[0].userId.substring(nodes[0].userId.indexOf("_") + 1)
+			} else {
+				window.location = "/statistics?userId=" + nodes[0].userId
+			}
+			
+		}
+	}
+
+	/**
+	 * 展开 / 折叠父节点控制
+	 */
+	function expandNode(zTree,nodes) {
+		for (var i=0, l=nodes.length; i<l; i++) {
+			zTree.setting.view.fontCss = {};
+			zTree.expandNode(nodes[i]);
+		}
+	}
+
+	/**
+	 * 异常处理
+	 */
+	function onAsyncSuccess(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+		var zTree = $.fn.zTree.getZTreeObj("userTree");
+		var node = zTree.getNodeByParam("userId", "user_" + showUser.userId, null);
+		zTree.selectNode(node)	
+	}
+	
+	/**
+	 * 异常处理
+	 */
+	function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+		var zTree = $.fn.zTree.getZTreeObj("userTree");
+		alert("异步获取数据出现异常。");
+		treeNode.icon = "";
+		zTree.updateNode(treeNode);
+	}
+	
+	function showUserinfo(userId){
+		$.ajax({
+			type:"get",
+			url:"/user/" + userId,
+			success:function(result){
+				showUser = result.data
+
+				var zTree = $.fn.zTree.getZTreeObj("userTree");
+				var node = zTree.getNodeByParam("userId", showUser.roleId, null);
+				zTree.expandNode(node);	
+				
+        		$(".dl_w_two").each(function(index, item){
+        			let id = item.id
+        			$(item).html(showUser[id]);
+        		})
+        		
+        		$("#roleSelect option[value='" + showUser.roleId + "']").prop("selected",true);
+        		oldSelect = showUser.roleId;
+        		if(showUser.roleId != 3){
+        			$("#authMenu").show()
+        			if(showUser.categoryList){
+            			var authZTree = $.fn.zTree.getZTreeObj("authTree");
+        				var array="";
+            			$.each(showUser.categoryList, function(i, item){
+            				authZTree.checkNode(authZTree.getNodeByParam("id", item.categoryId, null), true); //选中指定节点
+            				if (item.categoryId && item.categoryId != 0) {
+                                array += item.categoryId + ",";
+                            }
+                        })
+                        if (array != null && array != "") {
+                            array = array.substr(0, array.length - 1);
+                            $("#authCategoryIds").val(array);
+            			}
+            		}
+        		} else {
+        			$("#authMenu").hide()
+        		}
+			}
+		})
+	}
+</script>
+</@layout>

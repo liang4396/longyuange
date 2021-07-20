@@ -1,0 +1,24 @@
+ *{margin:0 ; padding:0; outline-style: none; list-style: none;}
+        .logo_dl{height: 70px;width: 100%;background:#fff;}
+        .name_dl{float: left;height: 48px;margin:8px 0 0px 0;padding:8px 0px 0 10px;font-family: "Microsoft Yahei";font-size:26px;}
+        .beijing{background:url("/static/img/login/background.jpg");width: 100%;background-size:cover;
+            position: relative;
+            }
+        .mima{position: absolute; left:200px;top:150px; width:330px; height:350px;background:rgba(67,63,68,0.9); ; border:0px solid #fff;padding:50px 0 0 0;
+                border-radius: 10px;
+
+                 }
+		.yonghuming_dl{ border:1px solid #ccc;width: 300px;margin:0 auto;background:#fff;padding:0 0 10px 20px;}
+        .text,.password,.tel{ width:250px;height:40px;margin:0px 0 0 0; border:0 none;padding:0 0 0 25px ;box-sizing: border-box;}
+        .text{background: url("/static/img/login/rentou.png") no-repeat 0px 10px;border-bottom:1px solid #ccc;font-size:18px;}
+		.tel{background: url("/static/img/login/tel.png") no-repeat 0px 10px;border-bottom:1px solid #ccc;width:150px;font-size:18px;}
+        .password{border-bottom: 1px #ccc solid; background: url("/static/img/login/suo.png") no-repeat 0px 10px;font-size: 18px;}
+		.code{background:#0066cc; color:#fff;border:0 none;cursor:pointer;width:120px;height:30px;}
+        
+        .checkbox{text-align: left;margin:25px 15px 0px;}
+        .checkbox input{vertical-align: middle;}
+        .checkbox span{font-size: 12px;color:#14b9fb;margin: 0 0 0 5px;}
+        .cuowu_dl{float: right; font-size: 12px;margin:4px 5px 0 0 ; color:#14b9fb;}
+        .dl_button{width:330px; height:50px; background:url("/static/img/login/lanse.jpg"); border:0 none;margin:35px 0 0 0;color:#fff; border-radius: 5px;
+                    font-size: 20px;cursor:pointer;
+                    }

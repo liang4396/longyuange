@@ -1,0 +1,478 @@
+
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/shujuzhengli.css" >
+<style>
+	.error {
+	    display: block;
+	}
+</style>
+<script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<!--<div class="con">
+    <ul  class="ztree" id="categoryTree">
+    </ul>
+</div>-->
+<div style=" width:1100px" class="con_right">
+    <div class="con_right_top" >
+        <h1 class="dl_h1" id="categoryName">试题修改</h1>
+        <div class="dl_blue"></div>
+
+    </div >
+    <form id="question">
+        <div class="con_right_bottom padding_0">
+            <div class="dl_w">
+                <div class="dl_width200" style="width:800px;">
+                    <div class="dl_w_one"><em>*</em>问题：</div>
+                    <div class="dl_w_two"><input name="questionBody" id="quesBody" type="text" class="dl_text120" style="width:650px;"></div>
+                </div>
+
+            </div>
+
+<!--            <div class="dl_w">
+                <div class="dl_width160">
+                    <div class="dl_w_one"><em>*</em>难度：</div>
+                    <div class="dl_w_two"><select name="difficulty"  id="diff" class="dl_select60">
+                        <option value=2>初级</option>
+                        <option value=1>中级</option>
+                        <option value=0>高级</option>
+                    </select></div>
+                </div>
+
+            </div>-->
+
+
+
+            <div class="dl_w">
+                <div class="dl_width300" >
+                    <div class="dl_w_one"><em>*</em>A：</div>
+                    <div class="dl_w_two"><input name="A"   id="a" class="dl_text120" style="width:200px;" type="text"></div>
+                </div>
+
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>B：</div>
+                    <div class="dl_w_two"><input name="B" id="b" type="text" class="dl_text120" style="width:200px;">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="dl_w">
+                <div class="dl_width300" >
+                    <div class="dl_w_one"><em>*</em>C：</div>
+                    <div class="dl_w_two"><input name="C"  id="c" class="dl_text120" style="width:200px;" type="text"></div>
+                </div>
+
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>D：</div>
+                    <div class="dl_w_two"><input name="D"  id="d" type="text" class="dl_text120" style="width:200px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>正确答案：</div>
+                    <div class="dl_w_two"><select id="rightAns"  name="rightanswer" class="dl_select60">
+                        <option>A</option>
+                        <option>B</option>
+                        <option>C</option>
+                        <option>D</option>
+                    </select></div>
+                </div>
+            </div>
+
+            <table hidden style="margin: 0;width:700px" id="UpdateLogDiv" class="biaoge dataTable no-footer">
+                <tr>
+                    <td style="width:140px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0); ">出题者微信名：</td>
+                    <td style="width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="importer"></td>
+                    <td style=" width:110px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">提交时间：</td>
+                    <td style="width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="registTime"></td>
+                </tr>
+                <tr>
+                    <td style="width:140px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">审核人员：</td>
+                    <td style="width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="checker"></td>
+                    <td style="width:110px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">入库时间：</td>
+                    <td style="width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="editTime"></td>
+                </tr>
+            </table>
+
+
+
+        </div>
+        <input type="hidden" name="categoryId" id="categoryId"><!--目录id隐藏域-->
+    </form>
+    <div style="text-align: center;padding:10px 20px;font-size:20px;">
+        <input type="button"  disabled style="color: darkgray;"  class="two_button"  id="UpdateQues"  value="修订" >
+        <input type="button" class="two_button"  id="adminMove"  onclick="javascript:moveQues();" value="移动" >
+        <input type="button" class="two_button"  id="adminDel"  onclick="javascript:deleteById();" value="删除" >
+        <input type="button" class="two_button"  onclick="javascript:history.back(-1);" value="返回" >
+
+    </div>
+
+</div>
+
+<input type="hidden" id="questionId"><!--目问题id隐藏域-->
+<div hidden id="moveDiv">
+    <ul class="ztree" id="moveTree">
+
+    </ul>
+</div>
+<@security.authorize access="hasRole('CHECKER') or hasRole('INPUTER')">
+<input hidden id="roleId" value="0">
+</@security.authorize>
+<@security.authorize access="hasRole('DATA')  or hasRole('ADMIN')">
+<input hidden id="roleId" value="1">
+</@security.authorize>
+</div>
+</div>
+</div>
+</body>
+<script>
+    $(function () {
+    	$(document).attr("title","试题展示-编辑");
+    	openMenu("stzs");//目录回显
+        loadQuestion();/*加载题目信息*/
+        $("#question").validate({
+			rules: {
+				questionBody:{
+					required: true,
+					maxlength:50
+				},
+				A:{
+					required: true,
+					maxlength:10
+				},
+				B:{
+					required: true,
+					maxlength:10
+				},
+				C:{
+					required: true,
+					maxlength:10
+				},
+				D:{
+					required: true,
+					maxlength:10
+				}
+			},
+			messages:{
+				questionBody:{
+					required: "必填",
+					maxlength:"请输入内容不超过50个字的问题"
+				},
+				A:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				B:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				C:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				D:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				}
+			}
+		})
+
+        //判断表单是否发生变化
+        $("#quesBody").on("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+
+        $("#a").on("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+        $("#b").on("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+        $("#c").on("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+        $("#d").on("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+
+        $("#rightAns").change("input propertychange",function () {
+            $("#UpdateQues").removeAttr('disabled');
+            $("#UpdateQues").removeAttr('style');
+
+        });
+    });
+
+
+
+
+    //保存题目
+    $('#UpdateQues').click(function () {
+    	if($("#question").valid()){
+    		var questionDraft = $('#question').serialize();
+            var id = getUrlParam("id");
+            $.ajax({
+                url: "/question/updateQuestion",
+                data:$('#question').serialize()+"&&questionId="+id,
+                type: "POST",
+                datatype: "json",
+                success: function (data) {
+                    if(data.code == 20000){
+                        //提交成功,提示成功信息
+                        App.showMessage("succeed", data.message, function(){
+                            window.location = "/search/index"
+                        })
+                    }else {
+                        App.showMessage("error", data.message, function(){
+                        })
+                    }
+                }
+            })	
+    	}
+    });
+
+    function loadQuestion(){
+        var id=getUrlParam("id");
+        var oprate = getUrlParam("oprate");
+        $.ajax({
+            url: "/questiondraft/findOne/"+id+"/"+oprate,
+            type: "GET",
+            success: function (data) {
+                $("#questionId").val(id);
+                if (oprate == 1){
+                    $('#quesBody').val(data.data.questionDraftBody);
+                    $('#categoryId').val(data.data.categoryId);
+
+                }else {
+                    $('#quesBody').val(data.data.questionBody);
+                    $('#categoryId').val(data.data.categoryId);
+                }
+
+                /*$('#diff').val(data.data.difficulty == 0 ? "高级": data.data.difficulty ==1? "中级":"低级" );*/
+               /* $('#diff').val(data.data.difficulty);*/
+                $('#a').val(data.data.a);
+                $('#b').val(data.data.b);
+                $('#c').val(data.data.c);
+                $('#d').val(data.data.d);
+                $('#rightAns').val(data.data.rightanswer);
+
+                //如果是管理员或者数据权限的人 则可以看见
+                if(oprate == "0" && $("#roleId").val() == 1 ) {
+
+                    //提交时间
+                    $('#registTime').html(data.data.registTime);
+                    //输入人员
+                    $('#importer').html(data.data.importer);
+                    //审核人员
+                    $('#checker').html(data.data.checker);
+                    //入库时间
+                    $('#editTime').html(data.data.editTime);
+                    $("#adminUpdate").show();
+                    $("#adminMove").show();
+                    $("#UpdateLogDiv").show();
+                }
+                var logList = data.data.updateLog
+                console.log(logList)
+                if(logList!=null){
+                    var html=""
+                    for (var i = 0;i<logList.length;i++){
+                        html +="<tr>";
+                        html +=" <td style='width:90px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += logList[i].type+"人员 : </td>";
+                        html +=" <td style='width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>" +logList[i].userName+"  </td>";
+                        html +=" <td style='width:90px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += logList[i].type+"时间 : </td>";
+                        html +=" <td style='width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += logList[i].updateLogTime;
+                        html +="</td></tr>";
+                    }
+                    $("#UpdateLogDiv").append(html);
+                }
+                showCategoryName(data.data.categoryId);//展示目录名称信息
+                //openTree();
+            }
+        })
+    }
+
+    //查询移动目录信息方法
+    function queryMoveTree(moveTreeSetting, categoryId) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/findParentId",
+            "data": {"categoryId": categoryId},
+            "dataType": "json",
+            "success": function (dataParenId) {
+                $.ajax({
+                    "type": "post",
+                    "url": "/category/ztree",
+                    "dataType": "json",
+                    "success": function (data) {
+                        zNodes = data;
+                        var t = $("#moveTree");
+                        t = $.fn.zTree.init(t, moveTreeSetting, zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("moveTree");
+                        var rootNode = zTree.getNodeByParam("id", 0);
+                        zTree.expandNode(rootNode, true, false);
+                        zTree.setting.edit.drag.isCopy = false;
+                        zTree.setting.edit.drag.isMove = true;
+                        zTree.setting.edit.drag.prev = true;
+                        zTree.setting.edit.drag.inner = true;
+                        zTree.setting.edit.drag.next = true;
+                        if (dataParenId != null) {
+                            zTree.expandNode(zTree.getNodeByParam("id", dataParenId, null));//展开指定节点
+                            zTree.selectNode(zTree.getNodeByParam("id", categoryId, null));//选中指定节点
+                            $("#categoryId").val(categoryId);
+                        }
+
+                    }
+                });
+            }
+        });
+    }
+
+    /*展示题目上方目录信息*/
+    function showCategoryName(categoryId) {
+        $.ajax({
+            type: "post",
+            url: "/category/findNamePathById",
+            data: {"categoryId": categoryId},
+            dataType: "json",
+            success: function (data) {
+                if(data.flag){
+                    $("#categoryName").html(data.data);
+                }
+            }
+        });
+    }
+
+
+    /*移动目录方法*/
+    function moveQues() {
+        var categoryId = $("#categoryId").val();
+        var questionId = $("#questionId").val();
+        //加载树
+        queryMoveTree(moveTreeSetting, categoryId);
+        var oprate = 0;/*0：表示正式表数据 1 表示移动草稿表数据*/
+        $("#moveDiv").dialog({
+            title: "问题移动目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "移动": function () {
+                    var categoryId = $('#categoryId').val();
+                    if(categoryId){
+                        $.ajax({
+                            url: "/questiondraft/moveQuestion/" + questionId + "/" + categoryId + "/" + oprate,
+                            type: "Put",
+                            success: function (data) {
+                                App.showMessage("succeed", data.message, function(){
+                                    $("#moveDiv").dialog("close");
+                                    //window.location.reload();
+                                    window.location.href = "/search/index";
+                                })
+                            }
+
+                        });
+                    } else {
+                        App.showMessage("warning", "请选择移动目录")
+                    }
+                },
+                "取消": function () {
+                    $("#moveDiv").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#moveDiv").dialog("destroy");
+            }
+        });
+    }
+
+    /*删除问题的方法*/
+    function deleteById() {
+        var questionId = $("#questionId").val();
+        App.showConfirm("question", "确定删除该问题？", function () {
+            $.ajax({
+                url: "/question/deleteMoveById/" + questionId,
+                type: "delete",
+                success: function (data) {
+                    App.showMessage("succeed", data.message, function () {
+                        /*刷新题目数据*/
+                        window.location.href = "/search/index";
+                    })
+                }
+            });
+        })
+    }
+
+    /* 移动分类类目配置信息 */
+    var moveTreeSetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function (treeId, treeNode) {
+                $("#categoryId").val("");
+                if(!treeNode.isParent){
+                    $("#categoryId").val(treeNode.id);
+                }
+                return true;
+            }
+        }
+    };
+
+    /*获取url中的值*/
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  // 匹配目标参数
+        if (r != null) return unescape(r[2]); return null; // 返回参数值
+    }
+</script>
+</@layout>

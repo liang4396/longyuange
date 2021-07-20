@@ -1,0 +1,397 @@
+<#include "../layout/layout.html">
+<@layout>
+<#include "menu.html"/><link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<style>
+	.dl_width158 {
+		width: 300px;
+		height: 30px;
+		float: left;
+	}
+		
+	.dl_w_two {
+		width: 200px
+	}
+	.tdpd{
+		padding: 0px 0px 0px 5px!important
+	}
+	.td{
+		padding: 0px!important
+	}
+	.biaoge tr {
+		font-size: 12px;
+		height: 30px;
+		 line-height: 18px;
+	}
+	.biaoge td { border: 0px solid #999;font-size:16px}
+	.error {
+	    display: block;
+	}
+</style>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1" id="categoryName">申诉处理<!--<a href="tianjiayonghu.html"><input  style="padding:6px 10px;"type="button" value="添加账户"class="top_button"/></a>--></h1>
+                <div class="dl_blue"></div>
+            </div>
+            <div class="con_right_bottom padding_0">
+            <form id="appealForm">
+                <div class="dl_h">
+                    <div class="user_canshu">
+	                    <div class="dl_w">
+		                    <div class="dl_width200" style="width:900px;">
+		                        <div class="dl_w_one"><em></em>问题：</div>
+		                        <div class="dl_w_two" style="width:800px;">
+		                        	<input id="quesBody" name="questionDraftBody" type="text" class="edit dl_text120" style="width:730px;"/>
+		                        </div>
+		                    </div>
+		                </div>
+		
+		                <div class="dl_w">
+		                    <div class="dl_width500" >
+		                        <div class="dl_w_one"><em></em>A：</div>
+		                        <div class="dl_w_two" style="width:300px;">
+		                        	<input id="a" name="a" class="edit dl_text120" style="width:200px;" type="text">
+		                        </div>
+		                    </div>
+		
+		                </div>
+		
+		                <div class="dl_w">
+		                    <div class="dl_width500" >
+		                        <div class="dl_w_one"><em></em>B：</div>
+		                        <div class="dl_w_two" style="width:300px;">
+		                        	<input id="b" name="b" class="edit dl_text120" style="width:200px;" type="text">
+		                        </div>
+		                    </div>
+		
+		                </div>
+		
+		
+		                <div class="dl_w">
+		                    <div class="dl_width500" >
+		                        <div class="dl_w_one"><em></em>C：</div>
+		                        <div class="dl_w_two" style="width:300px;">
+		                        	<input id="c" name="c" class="edit dl_text120" style="width:200px;" type="text">
+		                        </div>
+		                    </div>
+		
+		                </div>
+		
+		                <div class="dl_w">
+		                    <div class="dl_width500" >
+		                        <div class="dl_w_one"><em></em>D：</div>
+		                        <div class="dl_w_two" style="width:300px;">
+		                        	<input id="d" name="d" class="edit dl_text120" style="width:200px;" type="text">
+		                        </div>
+		                    </div>
+		                </div>
+	                
+	                	<div class="dl_w">
+		                    <div class="dl_width300" >
+		                        <div class="dl_w_one"><em></em>正确答案：</div>
+		                        <div class="dl_w_two">
+		                        	<select id="rightAns" name="rightAns" class="edit dl_select60">
+										<option value="A">A</option>
+										<option value="B">B</option>
+										<option value="C">C</option>
+										<option value="D">D</option>
+									</select>
+		                        </div>
+		                    </div>
+		                </div>
+	                
+	                	
+	                	<table style="margin: 0;width:700px" id="UpdateLogDiv" class="biaoge dataTable no-footer">
+		                	<tr style="height:100px">
+		                		<td style="vertical-align: text-top;width:140px;border-top: 1px solid rgb(0, 0, 0);border-left: 1px solid rgb(0, 0, 0);">申诉内容：</td>
+		                		<td colspan="3" style="vertical-align: text-top;width:260px;border-right: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">
+		                			<div style="padding: 5px;border: 1px solid rgb(0, 0, 0);width: 100%;height:100px;" id="appealContent"></div>
+		                		</td>
+		                	</tr>
+		                	<tr>
+		                		<td style="width:140px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);">申诉人：</td>
+		                		<td style="width:260px;border-bottom: 1px solid rgb(0, 0, 0);" id="sendUser"></td>
+		                		<td style=" width:110px;border-bottom: 1px solid rgb(0, 0, 0);">申诉时间：</td>
+		                		<td style="width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);" id="sendTime"></td>
+		                	</tr>
+		                	<tr style="height:100px">
+		                		<td style="vertical-align: text-top;width:140px;border-top: 1px solid rgb(0, 0, 0);border-left: 1px solid rgb(0, 0, 0);">处理意见：</td>
+		                		<td colspan="3" style="width:260px;border-right: 1px solid rgb(0, 0, 0);">
+		                			
+		                				<textarea id="reciveContent" name="reciveContent" style="font-size: 16px;resize:none;padding: 5px;border: 1px solid rgb(0, 0, 0);width: 100%;height:100px;" id="appealContent"></textarea>
+		                			
+		                		</td>
+		                	</tr>
+		                </table>
+		                
+						<div style="text-align: center;">
+							<span hidden id="userId"><@security.authentication property="principal.userId"></@security.authentication></span>
+		                    <input type="button" id="rejectBtn" class="two_button" value="驳回" style="padding:10px 20px;font-size:20px;">
+		                    <input type="button" id="editBtn" class="two_button" value="修改" style="padding:10px 20px;font-size:20px;">
+		                    <input type="button"  class="two_button" onclick="javascript:history.back(-1);" value="返回" style="padding:10px 20px;font-size:20px;">
+            			</div>
+            			<div class="likeQues"  hidden style="margin-top:20px">
+            			<span style="font-size: 17px;color: red">相似题目:</span>
+			            <table  style="margin: 0;width:700px;font-size: 17px" id="likeQuesData" class="biaoge dataTable">
+			            </table>
+			            </div>
+                    </div>
+                </div>
+				</form>
+            </div>
+        </div>
+        <div hidden id="scoreDiv">
+        	<form id="scoreForm">
+        		<div class="dl_w">
+		            <div style="width: 100%;text-align: center;font-size: 16px;" class="dl_width300" >
+		        		<input type="radio" name="score" value="10">10分
+		        		<input style="margin-left:30px" type="radio" name="score" value="7">7分
+		        		<input style="margin-left:30px" type="radio" name="score" value="3">3分
+		        		<input style="margin-left:30px" type="radio" name="score" value="0">0分
+		            </div>
+		        </div>
+        	</form>
+        </div>
+<script>
+	var oprate = 0;
+	$(function(){
+		$(document).attr("title","申诉处理");
+	    openMenu("xtkf");//导航栏回显
+	    openAdminMenu("appeal");/*目录添加颜色*/
+
+	    $.validator.addMethod("checkByte",function(value,element,params){
+			if(value){
+				var inputNum = value.replace(/[^\x00-\xff]/g, "**").length;
+    			if(inputNum > params){
+    				return false
+    			}
+			}
+			return true
+        },"请输入中文不超过5个字英文不超过10个字母长度的昵称");
+	    
+	    $("#scoreForm").validate({
+	    	rules:{
+	    		score:{
+	    			required:true
+	    		}
+	    	},
+	    	messages:{
+	    		score:{
+	    			required: "必选"
+	    		}
+	    	}
+	    })
+	    
+	    $("#appealForm").validate({
+	    	rules:{
+	    		reciveContent:{
+	    			required:true,
+	    			maxlength:50
+	    		},
+	    		questionDraftBody:{
+    				required: true,
+    				checkByte:100
+    			},
+    			a:{
+    				required: true,
+    				checkByte:20
+    			},
+    			b:{
+    				required: true,
+    				checkByte:20
+    			},
+    			c:{
+    				required: true,
+    				checkByte:20
+    			},
+    			d:{
+    				required: true,
+    				checkByte:20
+    			}
+	    	},
+	    	messages:{
+	    		reciveContent:{
+	    			required: "必填",
+	    			maxlength: "请输入不超过50个字的处理意见"
+	    		},
+	    		questionDraftBody:{
+    				required: "必填",
+    				checkByte:"请输入内容中文不超过50个字英文不超过100个字长度"
+    			},
+    			a:{
+    				required: "必填",
+    				checkByte:"请输入内容中文不超过10个字英文不超过20个字长度"
+    			},
+    			b:{
+    				required: "必填",
+    				checkByte:"请输入内容中文不超过10个字英文不超过20个字长度"
+    			},
+    			c:{
+    				required: "必填",
+    				checkByte:"请输入内容中文不超过10个字英文不超过20个字长度"
+    			},
+    			d:{
+    				required: "必填",
+    				checkByte:"请输入内容中文不超过10个字英文不超过20个字长度"
+    			}
+	    	}
+	    })
+	    
+	    $.ajax({
+	    	type:"get",
+	    	url:"/sysnews/" + getUrlParam("id"),
+	    	success:function(data){
+	    		let obj = data.data
+	    		$("#sendTime").text(obj.appealTime);
+	    		if(obj.appealUser){
+	    			$("#sendUser").text(obj.appealUser.nickName);
+	    		}
+	    		$("#appealContent").text(obj.appealContent);
+	    		oprate = obj.oprate
+	    		loadQuestion(obj.objId, obj.oprate);
+	    		
+	    		//有相似题
+                $.ajax({
+                    url:"/sysnews/similarQues/" + getUrlParam("id"),
+                    type: "get",
+                    success:function (data) {
+                        //将返回的数据的题干放入表中
+
+                        var questions = data;
+                        if (questions && questions.length > 0){
+                            $(".likeQues").show();
+                            //遍历显示题干
+                            var html=""
+                            for (var i = 0;i<questions.length;i++){
+                                html +="<tr>";
+                                html +=" <td style='font-size: 17px;width:260px;border: 1px solid rgb(0, 0, 0);'>" +questions[i].questionBody+"</td>";
+                                html +="</tr>";
+                            }
+                            $("#likeQuesData").append(html);
+                        }
+                    }
+                });
+	    		
+	    	}
+	    })
+	    
+	    $("#rejectBtn").on("click", function(){
+	    	reject()
+	    })
+	    
+	    $("#editBtn").on("click", function(){
+	    	edit()
+	    })
+	})
+	
+	function reject(){
+		if($("#appealForm").valid()){
+			$.ajax({
+		    	type:"Put",
+		    	url:"/sysnews/recive/" + $("#userId").text(),
+		    	data:{
+		    		id:getUrlParam("id"),
+		    		reciveContent:$("#reciveContent").val(),
+		    		type: 2,
+		    		oprate: oprate,
+		    		questionDraftBody: $("#quesBody").val(),
+		            a: $("#a").val(),
+		            b: $("#b").val(),
+		            c: $("#c").val(),
+		            d: $("#d").val(),
+		            rightanswer: $("#rightAns").val()
+		    	},
+		    	success:function(data){
+		    		//提交成功,提示成功信息
+	                App.showMessage("succeed", "驳回成功", function(){
+	                	history.back(-1)
+	                })
+		    	}
+		    })	
+		}
+	}
+	
+	function edit(){
+		if($("#appealForm").valid()){
+			$("#scoreDiv").dialog({
+	            title: "得分",
+	            autoOpen: true,
+	            modal: true,
+	            width: "450px",
+	            resizable: false,
+	            buttons: {
+	                "确定": function () {
+	                	if($("#scoreForm").valid()){
+	                		$.ajax({
+		        		    	type:"Put",
+		        		    	url:"/sysnews/recive/" + $("#userId").text(),
+		        		    	data:{
+		        		    		id:getUrlParam("id"),
+		        		    		reciveContent:$("#reciveContent").val(),
+		        		    		type: 3,
+		        		    		oprate: oprate,
+		        		    		score: $("[name=score]:checked").val(),
+		        		    		questionDraftBody: $("#quesBody").val(),
+		        		            a: $("#a").val(),
+		        		            b: $("#b").val(),
+		        		            c: $("#c").val(),
+		        		            d: $("#d").val(),
+		        		            rightanswer: $("#rightAns").val()
+		        		    	},
+		        		    	success:function(data){
+		        		    		//提交成功,提示成功信息
+		        	                App.showMessage("succeed", "修改成功", function(){
+		        	                	history.back(-1)
+		        	                })
+		        		    	}
+		        		    })	
+	                	}
+	                },
+	                "取消": function () {
+	                	$(this).dialog("close")
+	                }
+	            }
+	        })	
+		}
+	}
+	
+	function loadQuestion(id, oprate){
+        $.ajax({
+            url: "/questiondraft/findOne/"+id+"/"+ oprate,
+            type: "GET",
+            success: function (data) {
+                $('#quesBody').val(data.data.questionBody?data.data.questionBody:data.data.questionDraftBody);
+                
+                $('#a').val(data.data.a);
+                $('#b').val(data.data.b);
+                $('#c').val(data.data.c);
+                $('#d').val(data.data.d);
+                $('#rightAns option[value="' + data.data.rightanswer + '"]').prop("selected", true);
+
+                showCategoryName(data.data.categoryId);//展示目录名称信息
+            }
+        })
+    }
+	
+	/*展示题目上方目录信息*/
+    function showCategoryName(categoryId) {
+        $.ajax({
+            type: "post",
+            url: "/category/findNamePathById",
+            data: {"categoryId": categoryId},
+            dataType: "json",
+            success: function (data) {
+                if(data.flag){
+                    $("#categoryName").html(data.data);
+                }
+            }
+        });
+    }
+	
+	/*获取url中的值*/
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  // 匹配目标参数
+        if (r != null) return unescape(r[2]); return null; // 返回参数值
+    }
+</script>
+</@layout>

@@ -1,0 +1,317 @@
+<#include "layout/layout.html">
+
+<@layout>
+	<style>
+        .lghz,.csz,.lgs_con{height:210px;overflow-y: scroll;}
+        .lghz h6,.csz h6,.lgs_con h6{margin:0 0 0 0;}
+		.error {
+		    display: block;
+		}
+    </style>
+
+  
+
+    
+        <div style="min-height:300px" class="con">
+		    <div>
+		    	<input style="margin:5px 0px 0px 0px" type="button" class="two_button" id="selectCate"  value="选择目录"><br>
+		  	</div>
+        	<ul hidden class="ztree" id="Collecttree">
+
+            </ul>
+        </div>
+
+        <div style="min-height:300px" class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1" id="categoryNamePath">试题录入</h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <form hidden id="question">
+            <div class="con_right_bottom padding_0">
+                <div class="dl_w">
+                    <div class="dl_width200" style="width:800px;">
+                        <div class="dl_w_one"><em>*</em>问题：</div>
+                        <div class="dl_w_two"><input name="questionDraftBody" type="text" class="dl_text120" style="width:650px;"></div>
+                    </div>
+					
+                </div>
+				
+				<div class="dl_w">
+                            <div class="dl_width160">
+                        <div class="dl_w_one"><em>*</em>难度：</div>
+                        <div class="dl_w_two"><select name="difficulty" class="dl_select60">
+                            <option value=2>初级</option>
+                            <option value=1>中级</option>
+                            <option value=0>高级</option>
+                        </select></div>
+                    </div>
+                            
+                </div>
+				
+				
+			
+				<div class="dl_w">
+                            <div class="dl_width300" >
+                                <div class="dl_w_one"><em>*</em>A：</div>
+                                <div class="dl_w_two"><input name="A" class="dl_text120" style="width:200px;" type="text"></div>
+                            </div>
+
+                </div>
+
+                <div class="dl_w">
+                     <div class="dl_width300">
+                         <div class="dl_w_one"><em>*</em>B：</div>
+                         <div class="dl_w_two"><input name="B" type="text" class="dl_text120" style="width:200px;">
+                         </div>
+                     </div>
+                </div>
+
+				
+				<div class="dl_w">
+                            <div class="dl_width300" >
+                                <div class="dl_w_one"><em>*</em>C：</div>
+                                <div class="dl_w_two"><input name="C" class="dl_text120" style="width:200px;" type="text"></div>
+                            </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300">
+                        <div class="dl_w_one"><em>*</em>D：</div>
+                        <div class="dl_w_two"><input name="D" type="text" class="dl_text120" style="width:200px;">
+                        </div>
+                    </div>
+                </div>
+
+				<div class="dl_w">
+                            <div class="dl_width300">
+								<div class="dl_w_one"><em>*</em>正确答案：</div>
+								<div class="dl_w_two"><select  name="rightanswer" class="dl_select60">
+									<option>A</option>
+									<option>B</option>
+									<option>C</option>
+									<option>D</option>
+								</select></div>
+							</div>
+                    <input type="hidden" id="categoryId" name="categoryId"  value="">
+                            
+                </div>
+				
+
+
+
+            </div>
+			<div style="text-align: center;">
+                    <input type="button" id="saveQues" class="two_button" value="提交" style="padding:10px 20px;font-size:20px;">
+                    <input type="button" id="tempQues" class="two_button" value="暂存" style="padding:10px 20px;font-size:20px;">
+
+
+
+
+            </div>
+
+            </form>
+        </div>
+
+
+<script>
+
+    $("#selectCate").click(function () {
+        $('#Collecttree').show()
+    })
+
+    //保存题目
+    $('#saveQues').click(function () {
+    	if($("#question").valid()){
+    		var questionDraft = $('#question').serialize();
+
+
+            var categoryId = $("#categoryId").valueOf();
+            $.ajax({
+                    url: "/questiondraft/saveQues",
+                    data:$('#question').serialize()+"&&oprate=0"+"&&categoryId="+categoryId, //0代表提交  2 代表暂存
+                    type: "POST",
+                    datatype: "json",
+                    success: function (data) {
+
+                        if(data.code == 20000){
+                            //提交成功,提示成功信息
+                            App.showMessage("succeed", data.message, function(){
+                                //重置表单
+                               $("#question")[0].reset()
+                            })
+
+                        }else {
+                            App.showMessage("error", data.message)
+                        }
+                    }
+            })
+    	}
+    });
+
+    //暂存题目
+    $('#tempQues').click(function () {
+        var questionDraft = $('#question').serialize();
+        var categoryId = $("#categoryId").valueOf();
+
+        $.ajax({
+            url: "/questiondraft/saveQues",
+            data:$('#question').serialize()+"&&oprate=2"+"&&categoryId="+categoryId, //0代表提交  2 代表暂存
+            type: "POST",
+            datatype: "json",
+            success: function (data) {
+
+                if(data.code == 20000){
+                    //提交成功,提示成功信息
+                    App.showMessage("succeed", data.message, function(){
+                        //返回审核列表
+                        $("#question")[0].reset()
+                    })
+
+
+                }else {
+                    App.showMessage("error", data.message)
+                }
+            }
+        })
+    });
+
+
+    $(function () {
+    	$(document).attr("title","试题录入");
+    	openMenu("stlr");
+        queryCollectTree(collectSetting);
+        
+        $("#question").validate({
+    		rules: {
+    			questionDraftBody:{
+    				required: true,
+    				maxlength:50
+    			},
+    			A:{
+    				required: true,
+    				maxlength:10
+    			},
+    			B:{
+    				required: true,
+    				maxlength:10
+    			},
+    			C:{
+    				required: true,
+    				maxlength:10
+    			},
+    			D:{
+    				required: true,
+    				maxlength:10
+    			}
+    		},
+    		messages:{
+    			questionDraftBody:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过50个字的问题"
+    			},
+    			A:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			B:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			C:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			D:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			}
+    		}
+    	})
+    });
+
+    /* 分类类目树开始 */
+    var zTree;
+    var collectSetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            dblClickExpand : false,
+            showIcon:false,
+            showLine : true,
+            showTitle:true,
+            selectedMulti : false,
+            fontCss: { 'font-size': '15px;','color':'#0066c'}//统一设置样式
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+            beforeClick : function(treeId, treeNode) {
+                var zTree = $.fn.zTree.getZTreeObj("Collecttree");
+
+
+                return true;
+            },
+            onClick:function(treeId, treeNode){
+        		// 取得节点信息
+        		var zTree = $.fn.zTree.getZTreeObj(treeNode),
+        		nodes = zTree.getSelectedNodes();
+
+        		// 是父类节点
+        		if (nodes[0].isParent) {
+        			for (var i=0, l=nodes.length; i<l; i++) {
+        				zTree.expandNode(nodes[i]);
+        			}
+        		}else{
+                    // alert(   treeNode.name+ "========"+treeNode.id)
+                  $("#categoryId").val(nodes[0].id);
+
+                    console.log(nodes[0].id);
+                    $.ajax({
+                        url: "/category/findNamePathById",
+                        type: "POST",
+                        data:{categoryId:nodes[0].id},
+                        success: function (result) {
+                            console.log(result)
+                            $('#categoryNamePath').html(result.data);
+
+                        }
+                    });
+                    $("#question").show()
+                }
+            }
+        }
+    };
+
+    function queryCollectTree(setting) {
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/ztree",
+            "dataType" : "json",
+            "success" : function(data) {
+                zNodes = data;
+                var t = $("#Collecttree");
+                t = $.fn.zTree.init(t, setting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("Collecttree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+
+                zTree.expandNode(rootNode, true, false);
+
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+</script>
+</@layout>

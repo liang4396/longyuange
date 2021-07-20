@@ -1,0 +1,95 @@
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/datatables.zh.js"></script>
+<script type="text/javascript" src="/static/js/common/app.js"></script>
+<script type="text/javascript" src="/static/js/common/artDialogPlugin.js"></script>
+<script type="text/javascript" src="/static/js/artDialogPlugin.js"></script>
+<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ui.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ztree.all-3.5.js"></script>
+<script type="text/javascript" src="/static/js/jquery.mloading.js"></script>
+<script>
+	$(function() {
+		$('.con .btn').click(function(e) {
+			$(this).parent().toggleClass('current');
+			$(this).parent().siblings().removeClass('current');
+		});
+
+		$('.user_btn').click(function(e) {
+			$(this).next('ul').stop().slideToggle(300);
+		});
+
+		$('.con .wo').click(function(e) {
+			$(this).parent().toggleClass('dadong');
+			$(this).parent().siblings().removeClass('dadong');
+
+		});
+
+		$(".juzhong").css('min-height', $(window).height());
+	})
+
+	function openMenu(id) {
+		$(".top").css("background", "");
+		$("#" + id).css("background", "#ffcd7e");
+	}
+	
+	function setHome(obj, url) {
+		var code = 0;
+        try {
+            obj.style.behavior = 'url(#default#homepage)';
+            obj.setHomePage(url);
+        } catch (e) {
+            if (window.netscape) {
+                try {
+                    netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                } catch (ex) {
+                    code = 1;
+                }
+            } else {
+                code = 2;
+            }
+        }
+
+		if (code) {
+			App.showMessage("warning","抱歉，您所使用的浏览器无法完成此操作。\r\n您需要手动将【" +  window.location.host + "】设置为首页。")
+		}
+	}
+	function addFavourite() {
+		var url = window.location;
+		var title = document.title;
+		var code = 0;
+        try {
+            window.external.addFavorite(url, title);
+        } catch (e) {
+            try {
+                window.sidebar.addPanel(title, url, "");
+            } catch (ex) {
+                code = 1;
+            }
+        }
+		if (code === 1) {
+			App.showMessage("warning", "抱歉，您所使用的浏览器无法完成此操作。\r\n请使用【Ctrl+D】进行添加。")
+		}
+	}
+
+    //搜索点击事件
+     function searchButtonClick() {
+        var searchValue = $("#searchInput").val();
+        window.location.href = window.encodeURI("/search/index?searchValue="+searchValue)
+    }
+
+    /*获取url中的值*/
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  // 匹配目标参数
+        if (r != null) return unescape(r[2]); return null; // 返回参数值
+    }
+    /*获取url的中文参数*/
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)
+            return decodeURIComponent(r[2]);
+        return null;
+    }
+    </script>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/denglu.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/gonggong.css">
+    <style>
+        .lghz, .csz, .lgs_con {
+            height: 210px;
+            overflow-y: scroll;
+        }
+
+        .lghz h6, .csz h6, .lgs_con h6 {
+            margin: 0 0 0 0;
+        }
+
+        .dl_width160 {
+            width: 500px;
+        }
+
+        .dl_width300 {
+            width: 500px;
+        }
+
+        .dl_w_two {
+            width: 300px;
+        }
+
+footer{
+	border-top:1px solid #EBEBEB;
+	margin:30px auto;
+	padding-bottom:20px;
+	margin-bottom:0;
+}
+#guild ul{ list-style:none; padding:0; margin:0;}
+#guild ul li{ display:block; float:left; height:20px; line-height:20px;}
+#guild ul li.guild_img{ width:10px; text-align:center;}
+#guild ul li a{ width:70px; font-size:12px; display:block; color:#717171; float:left; font-family:'瀹嬩綋'; text-align:center;}
+#guild ul li a.guild_li_1{ text-align:left; width:60px;}
+#guild p{line-height:22px; margin-top:10px;}
+#guild p span,#guild p label{ font-weight:normal;  font-size:12px; font-family:'瀹嬩綋'; color:#717171;display:block;text-align:center; margin-right:30px;}
+#guild p span.black_font{ color:#3f3f3f;}
+#guild p label.black_font{ color:#3f3f3f;}
+#guild p label{ display:block;}
+.modal-footer{ 
+	border-top:1px solid #EBEBEB;
+	width:800px; 
+	margin:0 auto; 
+	text-align:left;
+	padding:0;
+}
+.modal-footer > p > a{
+	color:#3f3f3f;
+	margin-right:20px;
+}
+
+        /*转编码前 二维码样式
+        .impowerBox .qrcode {width: 110px;}
+        .impowerBox .title {display: none;}
+        .impowerBox .info {width: 200px;}
+        .status_icon {display: none}
+        .impowerBox .status {text-align: center;}
+        .info {display: none;}
+        .impowerBox {text-align: left;}*/
+    </style>
+    <script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+    <script src="/static/ceeemall/js/jquery-1.11.1.min.js"></script>
+    <script>
+        $(function () {
+            $(".juzhong").css('min-height', $(window).height());
+            var obj = new WxLogin({
+                self_redirect: true,
+                id: "login_container",
+                appid: "${appid}",
+                scope: "${scope}",
+                redirect_uri: "${redirect_uri}",
+                state: "",
+                style: "black",
+                href: "data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7d2lkdGg6IDExMHB4O30NCi5pbXBvd2VyQm94IC50aXRsZSB7ZGlzcGxheTogbm9uZTt9DQouaW1wb3dlckJveCAuaW5mbyB7d2lkdGg6IDIwMHB4O30NCi5zdGF0dXNfaWNvbiB7ZGlzcGxheTogbm9uZX0NCi5pbXBvd2VyQm94IC5zdGF0dXMge3RleHQtYWxpZ246IGNlbnRlcjt9DQouaW5mbyB7ZGlzcGxheTogbm9uZTt9DQouaW1wb3dlckJveCB7dGV4dC1hbGlnbjogbGVmdDt9"
+            });
+        })
+    </script>
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="tu">
+        <div class="dajia"></div>
+        <div class="jieshao"></div>
+        <div class="guize"></div>
+        <!--<div class="wenzi">
+            <h1>1.请用参赛的手机微信扫描二维码进行登录。</h1>
+            <h1>2.手机确认后系统跳转至试题输入界面。</h1>
+            <h1>3.本系统只有试题录入和提交功能，其他信息请从手机端进行查看。</h1>
+            <h1>4.如果您是初次登录参赛，您需要在小程序中给与授权和确认规则。</h1>
+
+        <div>-->
+        <div class="wenzitu"></div>
+        <div class="erweima">
+            <div id="login_container"></div>
+        </div>
+    </div>
+
+<div id="guild" class="modal-footer">
+<p class="font-black">
+            <span class="black_font">版权所有 Copyright(C) 2014-2019 北京信锚网络有限公司</span>
+            <span class="black_font">备案/许可证编号为：<a href="http://www.miitbeian.gov.cn" target="_blank">京ICP备15034035号</a> </span>
+            <span class="black_font">信锚网.电力电气产品B2B信用电商平台</span>        
+			<span class="black_font">京公网安备：11010802017612</span>
+           </p>
+</div>
+</div>
+</body>
+</html>

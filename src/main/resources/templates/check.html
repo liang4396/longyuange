@@ -1,0 +1,1007 @@
+<#include "layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="/static/ceeemall/css/caozuojilu.css">
+<link type="text/css" rel="stylesheet" href="/static/css/jquery.mloading.css">
+<script type="text/javascript" src="/static/js/jquery.mloading.js"></script>
+
+<style>
+	.ui-dialog *{
+		font-size:15px
+	}
+	.tdpd{
+		padding: 0px 0px 0px 5px!important
+	}
+	.biaoge tr {
+		font-size: 12px;
+		height: 30px;
+		 line-height: 18px;
+	}
+	.cateinput:hover{color:#fff;background:#ffcd7e;}
+</style>
+	<ul class="qiehuan" >
+		<li hidden  class="cateinput active" id="cate1"  value ="1">电力发展</li>
+		<li hidden class="cateinput" id="cate2"   value ="2">发电原理</li>
+		<li hidden class="cateinput" id="cate3"   value ="3">电网知识</li>
+		<li hidden class="cateinput" id="cate4"   value ="4">用电常识</li>
+		<li hidden class="cateinput" id="cate5"   value ="5">电力设备</li>
+	</ul>
+
+    <div class="tableData" >
+
+	<div class="con_right " style="width:1100px;float:none;margin:0px auto;">
+		<div hidden id="categoryTree">
+			<ul class="ztree" id="moveTree" >
+
+			</ul>
+
+		</div>
+
+
+		<input type="hidden" id="categoryId" name="categoryId"  value="">
+
+		<ol class="zaixian">
+						<div class="con_right_top">
+							<h1 class="dl_h1" id="cateName">审核修改<!--<a href="tianjiacanshu.html"><input type="button" value="修改/新增参数"class="top_button"/></a>--></h1>
+
+							<div class="dl_blue"></div>
+						</div>
+						<div class="con_right_bottom padding_0">
+					<!--		&lt;!&ndash;三级联动&ndash;&gt;
+							<div class="dl_w">
+								<div class="dl_width300" style="width:900px;">
+									<div class="dl_w_one w_80" style="font-size:14px;width:auto;margin:5px 0 0 0;"><em></em>目录：</div>
+									<div class="dl_w_two"><select id="cateOne" class="dl_select120" style="margin:0 5px 0 0;">
+										<option value="">一级目录</option>
+
+									</select>
+									</div>
+									<div class="dl_w_two"><select id="cateTwo" class="dl_select120" style="margin:0 5px;">
+										<option  value="">二级目录</option>
+									</select>
+									</div>
+									<div class="dl_w_two"><select hidden id="cateThree" class="dl_select120" style="margin:0 5px;">
+										<option  value="">三级目录</option>
+
+									</select>
+									</div>
+									<div class="dl_w_one w_80" style="font-size:14px;width:auto;margin:5px 0 0 0;"><em></em>难度：</div>
+									<div class="dl_w_two"><select id="diff" class="dl_select120" style="margin:0 5px;">
+										<option value="">难度</option>
+										<option value="0">高</option>
+										<option value="1">中</option>
+										<option value="2">低</option>
+									</select>
+									</div>
+
+								</div>
+
+
+								</div>-->
+
+
+							</div>
+						<div>
+							<!--试题列表-->
+							<table id="myTable" border="1" cellspacing="1" cellpadding="1" class="biaoge">
+							</table>
+
+						</div>
+						<div style="text-align: center;">
+								<input type="button" class="two_button" hidden value="批量入库">
+							</div>
+				</ol>
+
+
+			<!--文件审核-->
+			<ol class="wenjian" style="display:none;">
+				<div class="con_right_top">
+					<h1 class="dl_h1">批量审核<!--<a href="tianjiacanshu.html"><input type="button" value="修改/新增参数"class="top_button"/></a>--></h1>
+
+					<div class="dl_blue"></div>
+
+				</div>
+				<!--文件列表-->
+				<div class="con_right_bottom padding_0">
+					<table style="width:99%" id="fileTable"  border="1" cellspacing="1" cellpadding="1" class="biaoge">
+
+					</table>
+					<!--<div class="dl_w dl_em">
+                        <div class="dl_width600" style="width:500px;">
+                            <div class="dl_w_one"><em></em>参数枚举：</div>
+                            <div class="dl_w_two">
+                                系统带入
+                            </div>
+                        </div>
+                    </div>-->
+				</div>
+
+			</ol>
+
+        </div>
+
+
+
+
+		<div hidden style="padding-top: 20px;" id="checkerImport">
+			<input id="upfile" type="file" name="file">
+		<!--	<input type="button" value="导入"  id="upload">-->
+		</div>
+
+
+	</div>
+<@security.authorize access="hasRole('DATA')  or hasRole('ADMIN')">
+<input hidden id="roleId" value="1">
+</@security.authorize>
+
+<div hidden  id="errorInfo">
+	<div style="white-space: pre-line;height: 300px;overflow-x: hidden;font-size: 17px;color: red" id="errorInfo2"></div>
+
+</div>
+
+</body>
+<script>
+    var categoryId;
+    $(function () {
+    	$(document).attr("title","审核修改");
+        openMenu("shxg");
+
+      	//根据权限显示上方的目录
+		if($("#roleId").val() == 1 ){
+		    $(".cateinput").show();
+		}else{
+            loadCategory();
+		}
+      
+        loadTableData();
+
+        $(".cateinput").click(function () {
+            //获取被被点击的value
+            $(".cateinput").removeClass("active");
+            $(this).addClass("active");
+            
+            $(".cateinput").css("background", "");
+    		$(this).css("background", "#ffcd7e");
+            
+    		var categoryId  = $(this).val();
+    		$("#cateName").html($(this).text());
+    		tableList.ajax.reload()
+        });
+
+        //判断缓存中是否有目录id
+        if (localStorage.getItem("cateId") != null ){
+            categoryId = localStorage.getItem("cateId");
+            console.log(categoryId)
+            localStorage.removeItem("cateId")
+            //根据cateId 默认选中
+            $(".cateinput").removeClass("active");
+
+            $(".cateinput").each(function (index,item) {
+                console.log($(item).val());
+                if( $(item).val() == categoryId){
+
+                    $(item).click()
+
+                }
+            })
+            //localStorage.removeItem("cateId")
+        }else{
+        	$('.qiehuan li:visible:first').click();
+        }
+
+    });
+
+    function loadCategory(){
+        //获取该用户权限及所负责审核的目录
+	    $.ajax({
+		    url: "/user/findCategoryList",
+		    type: "GET",
+		    async: false,
+		    success: function (data) {
+			    var categoryList =  data.data;
+			    for(var i=0; i < categoryList.length; i++){
+                var id = categoryList[i].categoryId;
+					$("#cate"+id+"").show();
+				}
+           	}
+	    })
+    }
+
+
+    function loadTableData() {
+        //将缓存中的目录查询出来
+
+		var startPage;
+		if (localStorage.getItem("currentPage") != null ){
+            startPage = localStorage.getItem("currentPage")
+			localStorage.removeItem("currentPage")
+		}else{
+            startPage = 0;
+		}
+        //判断缓存中是否有目录id
+        // var categoryId;
+        // if (localStorage.getItem("cateId") != null ){
+        //     categoryId = localStorage.getItem("cateId");
+        //     //根据cate获取
+        //     localStorage.removeItem("cateId")
+        //
+        // }else{
+        //     categoryId = 1
+        // }
+
+
+
+
+
+
+
+        tableList = $('#myTable').DataTable({
+            "bLengthChange": false,   // 是否改变每页显示行数
+            "searching" : false,      // 是否显示搜索框
+            "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+            "serverSide": true,       // true表示使用后台分页
+            "bInfo" : false,
+            "iDisplayLength": 15,
+
+
+			"iDisplayStart" : startPage*2,
+            autoWidth:false,
+            sPaginationType: "first_last_numbers",  // 显示首页和末页
+            "ajax": {
+                "url": "/questiondraft/search/",  // 异步传输的后端接口url
+                "type": "GET",      // 请求方式
+                "data": {categoryId: function () {
+                            return  $(".cateinput.active").val()
+
+                    },
+							status: function () {
+							return 0;
+                }}
+            },
+
+
+            "columns": [
+                {
+                    title: function () {
+                        return "<div align='center'><input type='checkbox' id='selectAll' onclick='selectAll(this)'  value=''></div>" ;
+                    },
+                    "class":" align br",
+                    width: "20px",
+                    data: function (e) {
+                        $("#selectAll").prop("checked",false);
+
+                        return "<div align='center'><input type='checkbox'  onclick = childclick()" +
+                            " name='ckb' value='" + e.questionDraftId + "'></div>" ;
+                    }},
+                {
+                    title:"序号",width: "30px",
+                    "class":"align bl",
+                    "data" : null,
+                    "render" : function(data, type, full, meta){
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                }, // 序号
+                { title:"试题内容",width:"400px",
+                    "class":"tdpd",
+                    data: function (e) {
+                        if(e.isLike == 1){
+                            return "<div><span style='color: red'>"+e.questionDraftBody+"</span></div>"
+
+                        }else {
+                            return "<div>"+e.questionDraftBody+"</div>"
+                        }
+                        //return "<div>"+e.questionDraftBody+"</div>"
+                    }},
+                { title:"A", width: "80px",
+                    "class":"tdpd",
+                    data: function (e) {
+
+                        return "<div>"+e.a+"</div>"
+                    }},
+                { title:"B", width: "80px",
+                    "class":"tdpd",
+                    data: function (e) {
+                        return "<div>"+e.b+"</div>"
+                    }},
+                { title:"C",width: "80px", "class":"tdpd",
+                    data: function (e) {
+                        return "<div>"+e.c+"</div>"
+                    }},
+                { title:"D",width: "80px", "class":"tdpd",
+                    data: function (e) {
+                        return "<div>"+e.d+"</div>"
+                    }},
+                { title:"答案",width: "60px","class":"align",
+                    data: function (e) {
+                        return e.rightanswer
+                    }},
+                { title:"操作",width: "190px", "class":"align",
+                    data: function (e) {
+                        return "<td class=\\\"align\\\"><a href='javascript:void(0)' onclick = 'chakan(\""+e.questionDraftId+"\")'  >查看</a><span>丨" +
+                           // "<a href='javascript:void(0)' onclick='moveQues(\""+e.questionDraftId+"\",\""+e.categoryId+"\")'>移动</a><span >丨" +
+                            "<a href='javascript:void(0)' onclick='ruku(\""+e.questionDraftId+"\")'>入库</a><span >丨"+
+                            "<a href='javascript:void(0)' onclick='daiding(\""+e.questionDraftId+"\")'>待定</a><span >丨" +
+                            "</span><a href='javascript:void(0)' onclick='deleteById(\""+e.questionDraftId+"\",\""+0+"\")'>删除</a></td>"
+                    }}
+
+
+            ]
+        });
+
+        $(tableList.column(0).header()).addClass("br")
+        $(tableList.column(0).header()).css("padding", "0px")
+        $(tableList.column(1).header()).addClass("xh bl")
+        $(tableList.column(1).header()).css("padding", "0px")
+        $(tableList.column(2).header()).css("padding", "0px")
+        $(tableList.column(3).header()).css("padding", "0px")
+        $(tableList.column(4).header()).css("padding", "0px")
+        $(tableList.column(5).header()).css("padding", "0px")
+        $(tableList.column(6).header()).css("padding", "0px")
+        $(tableList.column(7).header()).css("padding", "0px")
+        $(tableList.column(8).header()).css("padding", "0px")
+    }
+
+    //全选
+   function selectAll(_this) {
+
+       $("input[name='ckb']").prop("checked",_this.checked)
+       if( $("input[name='ckb']:checked").length > 0){
+
+           $(".two_button").show();
+       }else{
+           $("#selectAll").prop("checked",false)
+           $(".two_button").hide();
+       }
+   }
+
+   function chakan(questionDraftId) {
+
+		//localStorage.setItem("categoryOne",$("#cateOne option:selected").text());
+		//缓存当前所选目录
+	   //获取当前被选中的id
+	   localStorage.setItem("cateId",$(".cateinput.active").val());
+
+		console.log(tableList.page)
+	   localStorage.setItem("currentPage",tableList.page());
+       window.location.href="/questiondraft/draftDetail?id="+ questionDraftId+"&&oprate=1";
+
+
+
+   }
+
+   function childclick() {
+       if( $("input[name='ckb']:checked").length > 0){
+
+           $(".two_button").show();
+       }else{
+           $("#selectAll").prop("checked",false)
+           $(".two_button").hide();
+       }
+
+
+   }
+
+
+   $(".two_button").click(function () {
+
+
+
+       App.showConfirm("question", "确定审核通过这些数据吗?", function(){
+           $.ajax({
+               url: "/question/saveQuesListByWeb",
+               type: "POST",
+               data: {questionDraftIds:function () {
+                       var questionDraftIds =[];
+                       $("input[name='ckb']:checked").each(function (i) {
+                           questionDraftIds[i] = $(this).val();
+                       });
+                       if(questionDraftIds.length == 0){
+                           App.showMessage("error", "请选择题目", function(){
+
+                           })
+					   }else{
+                           return questionDraftIds;
+					   }
+
+                   }},
+               success: function (data) {
+                   App.showMessage("succeed", data.message, function(){
+                       /*刷新题目数据*/
+                       tableList.ajax.reload()
+					   //将批量入库按钮隐藏
+                       $(".two_button").hide()
+
+                   })
+
+
+
+               }
+           })
+       })
+
+
+
+   });
+
+
+    //加载一级目录
+/*    function loadCateOne() {
+
+        var cateOne;
+        var diff;
+        //先获取1级目录
+		$("#diff option").each(function(i,item){
+            if($(this).text ==localStorage.getItem("diff") ){
+                $(this).prop("selected", true);
+
+            }
+		});
+
+
+
+
+        $.ajax({
+            url: "/category/findCateOne",
+            type: "post",
+            success: function (data) {
+
+                for (var i = 0; i < data.length; i++){
+
+                    $("#cateOne").append("<option value='"+data[i].categoryId+"'>"+data[i].categoryName+"</option>")
+                }*/
+
+                //有一级  赋值
+                /*$("#cateOne option").each(function(i,item){
+                    if ($(this).text() == localStorage.getItem("categoryOne")){
+                        //缓存有一级数据
+                        $(this).prop("selected", true);
+                        cateOne = $(this).val()
+                        //加载二级
+                        $.ajax({
+                            url: "/category/findSonCategoryId",
+                            type: "post",
+                            data: {"categoryId":cateOne},
+                            success: function (data) {
+
+                                for (var i = 0; i < data.length; i++){
+
+                                    $("#cateTwo").append("<option value='"+data[i].categoryId+"'>"+data[i].categoryName+"</option>")
+                                }
+                                $("#cateTwo option").each(function(i,item){
+                                    if ($(this).text() == localStorage.getItem("categoryTwo")){
+                                        //缓存中有二级目录
+                                        $(this).prop("selected", true);
+									}
+								});
+                                localStorage.removeItem("categoryTwo")
+
+								//目录加载完毕后根据目录查询数据
+										//判断是否有二级目录
+									if($.trim($("#cateTwo option:selected").val()) != $.trim("")){
+                                    	//有 根据二级查
+										aoData = {
+                                            categoryId2: function () {
+                                                if($.trim($("#cateTwo option:selected").val()) != $.trim("")){
+                                                    return $("#cateTwo option:selected").val();
+                                                }else{
+                                                    return -1;
+                                                }
+                                            },
+											diffculty: function () {
+                                                if ($.trim($("#diff option:selected").val() != $.trim(""))) {
+                                                    //难度不为空
+                                                    return $("#diff option:selected").val();
+                                                } else {
+                                                    //难度为空,难度存返回11
+                                                    return -1;
+                                                }
+                                            }
+										};
+                                        loadTableData(aoData)
+									}else{
+                                    	//没有二级就根据一级查询
+                                        aoData= {
+                                            categoryId1: function () {
+                                                if ($.trim($("#cateOne option:selected").val()) != $.trim("")){
+                                                    return  $("#cateOne option:selected").val();
+                                                }else{
+                                                    return -1;
+                                                }
+                                            },
+                                            diffculty: function () {
+                                                if ($.trim($("#diff option:selected").val() != $.trim(""))) {
+                                                    //难度不为空
+                                                    return $("#diff option:selected").val();
+                                                } else {
+                                                    //难度为空,难度存返回11
+                                                    return -1;
+                                                }
+                                            }
+
+                                        };
+                                        loadTableData(aoData)
+									}
+                            }
+
+                        })
+
+                    }
+                });*/
+        /*        localStorage.removeItem("categoryOne");
+
+
+
+
+            }
+        })
+
+    }*/
+
+	//二级目录数据显示
+ /*   $("#cateOne").change(function () {
+
+		//根据所选一级目录回显二级数据
+		//先清空之前的数据
+		$("#cateTwo option:gt(0)").remove();
+		$("#cateThree option:gt(0)").remove();
+
+
+		//获取一级目录选中的id
+		var categoryId = $("#cateOne option:selected").val();
+
+
+		//发请求查询二级目录
+		$.ajax({
+			url: "/category/findSonCategoryId",
+            type: "post",
+			data: {"categoryId":categoryId},
+            success: function (data) {
+
+                for (var i = 0; i < data.length; i++){
+
+                    $("#cateTwo").append("<option value='"+data[i].categoryId+"'>"+data[i].categoryName+"</option>")
+                }
+            }
+
+		})
+
+
+
+    });*/
+
+
+    /*$("#cateTwo").change(function () {
+
+        //根据所选二级目录回显三级数据
+        //先清空之前的数据
+        $("#cateThree option:gt(0)").remove();
+
+       //获取二级目录选中的id
+        var categoryId = $("#cateTwo option:selected").val();
+        console.log(categoryId)
+        //发请求查询三级目录
+        $.ajax({
+            url: "/category/findSonCategoryId",
+            type: "post",
+            data: {"categoryId":categoryId},
+            success: function (data) {
+
+                for (var i = 0; i < data.length; i++){
+
+                    $("#cateThree").append("<option value='"+data[i].categoryId+"'>"+data[i].categoryName+"</option>")
+                }
+            }
+
+        })
+
+
+
+    });*/
+
+	//分页查询文件列表
+  /*  $(document).ready(function(){
+        var searchValue = {
+            searchValue :function(){
+                return $("#searchInput").val()
+            }
+        };
+
+    tableList2 = $('#fileTable').DataTable({
+        "bLengthChange": false,   // 是否改变每页显示行数
+        "searching" : false,      // 是否显示搜索框
+        "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+        "serverSide": true,       // true表示使用后台分页
+        "bInfo" : false,
+        "iDisplayLength": 15,
+        autoWidth:false,
+        sPaginationType: "first_last_numbers",  // 显示首页和末页
+        "ajax": {
+            "url": "/file/search/",  // 异步传输的后端接口url
+            "type": "GET",      // 请求方式
+            "data":searchValue
+        },
+
+
+        "columns": [
+            {title:"序号", "class":"align",width: "60px","data" : null,
+                "render" : function(data, type, full, meta){
+                    return meta.row + 1 + meta.settings._iDisplayStart;  // 序号
+            }},
+
+            { title:"文件名", "class":"tdpd",width: "625px", data: function (e) {
+                    return "<div  style='width: 620px; white-space: nowrap;\n" +
+                        "                 overflow: hidden;\n" +
+                        "                 text-overflow: ellipsis;' title=\""+e.fileName+"\">"+e.fileName+"</div>"
+                }},
+            { title:"上传人", "class":"align", width: "90px",data: function (e) {
+                    return e.uploader.username
+                }},
+            { title:"上传时间", "class":"align", width: "140px",data: function (e) {
+                    return e.uploadTime
+                }},
+            { title:"操作", "class":"align", width: "120px", data: function (e) {
+                    return "<td class=\\\"align\\\"><a href=\"/upload/downloadFile/"+ e.fileId+"\" >下载</a><span>丨" +
+                        "<a href='javascript:void(0)' onclick='checkerImport(\""+e.fileId+"\")'>审核</a><span >丨" +
+                        "</span><a href='javascript:void(0)' onclick='deleteById(\""+e.fileId+"\",\""+1+"\")'>删除</a></td>"
+                }}
+
+
+        ]
+    });
+
+	$(tableList2.column(0).header()).css("padding","0px")
+	$(tableList2.column(1).header()).css("padding","0px")
+	$(tableList2.column(2).header()).css("padding","0px")
+	$(tableList2.column(3).header()).css("padding","0px")
+    $(tableList2.column(4).header()).css("padding","0px")
+    
+        //搜索点击事件
+        $("#searchButton").click(function () {
+            /!*刷新题目数据*!/
+            tableList2.ajax.reload()
+        })
+
+    });*/
+
+
+
+
+    function ruku(questionDraftId) {
+
+        //oprate =2 代表审核通过 进行入库操作
+        var oprate =2;
+          $.ajax({
+			url: "/questiondraft/findOne/"+questionDraftId+"/"+1,
+			type: "get",
+            success: function (data) {
+                App.showConfirm("question", "确定通过该数据吗?", function(){
+                    $.ajax({
+                        url: "/questiondraft/check/"+questionDraftId+"/"+oprate,
+                        type: "get",
+                        data: data.data,
+                        success: function (result) {
+                            App.showMessage("succeed", result.message, function(){
+                                /*刷新题目数据*/
+                                tableList.ajax.reload()
+                            })
+                        }
+                    })
+                })
+            }
+
+		})
+
+    }
+
+    //审核待定
+    function daiding(questionDraftId) {
+
+        //oprate =3 代表待定
+        var oprate =3;
+
+        $.ajax({
+            url: "/questiondraft/findOne/"+questionDraftId+"/"+1,
+            type: "get",
+            success: function (data) {
+                App.showConfirm("question", "确定放入待定区吗?", function(){
+                    $.ajax({
+                        url: "/questiondraft/check/"+questionDraftId+"/"+oprate,
+                        type: "get",
+                        data: data.data,
+                        success: function (result) {
+                            App.showMessage("succeed", result.message, function(){
+                                /*刷新题目数据*/
+                                tableList.ajax.reload()
+                            })
+                        }
+                    })
+                })
+            }
+
+        })
+
+    }
+
+    function deleteById(id,oprate) {
+        App.showConfirm("question", "该操作将扣用户10分，确认此操作？", function(){
+            if(oprate == 0){
+                //oprate = 0 //删除题目
+                $.ajax({
+                    url: "/questiondraft/delete/"+id,
+                    type: "delete",
+                    success: function (data) {
+                        App.showMessage("succeed", data.message, function(){
+                            /*刷新题目数据*/
+                            tableList.ajax.reload()
+                        })
+                    }
+                });
+            }else if (oprate == 1){
+                //删除文件对象
+                $.ajax({
+                    url: "/file/delete/"+id,
+                    type: "delete",
+                    success: function (data) {
+                        if(data.code == 20000){
+                            App.showMessage("succeed", data.message, function(){
+                                tableList2.ajax.reload()
+                            })
+                        }else if(data.code == 20005){
+                            App.showMessage("error", data.message)
+                        }
+
+                    }
+                })
+            }
+
+
+        })
+
+    }
+
+    function checkerImport(fileId) {
+		//获取文件
+
+
+        $("#checkerImport").dialog({
+            title: "导入数据",
+            autoOpen: true,
+            modal: true,
+            width: "450px",
+            resizable: false,
+            open: function (event, ui) {
+            	// Height setter has no effect after init either
+            	$(this).dialog("option", "height", 200);
+            },
+			buttons: {
+                "导入": function () {
+                    $(this).dialog("close")
+                    
+                    $(".juzhong").mLoading({
+			            text:"上传中",//加载文字，默认值：加载中...
+			        });
+                    
+                    var formData = new FormData();
+                    formData.append("file",$("#upfile")[0].files[0]);
+
+                    console.log(formData)
+					$.ajax({
+						url: "/upload/importExcel/"+fileId,
+						type: "POST",
+						data: formData,
+                        processData: false, // 将数据转换成对象，不对数据做处理，故 processData: false
+                        contentType: false,    // 不设置数据类型
+						success: function (data) {
+							$(".juzhong").mLoading("hide");
+						    if(data.code == 20000){
+                                App.showMessage("succeed", data.message, function(){
+                                    /*刷新题目数据*/
+                                    tableList2.ajax.reload()
+                                })
+							}else if(data.code == 20006){
+						        //有错误数据,打印错误信息
+                                $("#errorInfo2").html(data.data)
+                               $("#errorInfo").dialog({
+                                   title: "错误信息",
+                                   autoOpen: true,
+                                   modal: true,
+                                   resizable: false,
+								   width: "600px"
+                               })
+							}else if(data.code == 20005){
+                                App.showMessage("error", data.message)
+							}else{
+                                App.showMessage("error", data.message)
+							}
+
+                        },
+                        error:function(){
+                        	$(".juzhong").mLoading("hide");
+                        }
+					});
+                }
+			}
+		})
+
+
+
+    }
+
+
+    function moveQues(questionDraftId,categoryId) {
+
+        //加载树
+        queryMoveTree(moveTreeSetting, categoryId);
+        var oprate = 1;
+        $("#categoryTree").dialog({
+            title: "问题移动目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "移动": function() {
+                	var categoryId = $('#categoryId').val();
+                    if(categoryId){
+	                    $.ajax({
+	                        url: "/questiondraft/move/"+questionDraftId+"/"+categoryId+"/"+oprate,
+	                        type: "PUT",
+	                        success: function (data) {
+	                            $("#categoryTree").dialog("close")
+	                            App.showMessage("succeed", data.message, function(){
+	                                /*刷新题目数据*/
+	                                tableList.ajax.reload()
+	                            })
+	                        }
+	                    });
+                    }else {
+                    	App.showMessage("warning", "请选择移动目录")
+                    }
+                },
+                "取消": function () {
+                    $("#categoryTree").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#categoryTree").dialog("destroy");
+            }
+        });
+
+
+    }
+
+    //查询目录信息方法
+    function queryMoveTree(moveTreeSetting, categoryId) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/findParentId",
+            "data": {"categoryId": categoryId},
+            "dataType": "json",
+            "success": function (dataParenId) {
+
+                $.ajax({
+                    "type": "post",
+                    "url": "/category/ztree",
+                    "dataType": "json",
+                    "success": function (data) {
+                        zNodes = data;
+                        var t = $("#moveTree");
+                        t = $.fn.zTree.init(t, moveTreeSetting, zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("moveTree");
+                        var rootNode = zTree.getNodeByParam("id", 0);
+                        zTree.expandNode(rootNode, true, false);
+                        zTree.setting.edit.drag.isCopy = false;
+                        zTree.setting.edit.drag.isMove = true;
+                        zTree.setting.edit.drag.prev = true;
+                        zTree.setting.edit.drag.inner = true;
+                        zTree.setting.edit.drag.next = true;
+                        if(dataParenId != null){
+                            zTree.expandNode(zTree.getNodeByParam("id",dataParenId, null));//展开指定节点
+                            zTree.selectNode(zTree.getNodeByParam("id",categoryId,null));//选中指定节点
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /* 移动分类类目配置信息 */
+    var moveTreeSetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '15px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function (treeId, treeNode) {
+            	$("#categoryId").val("");
+            	if(!treeNode.isParent){
+                    $("#categoryId").val(treeNode.id);
+            	}
+                return true;
+            }
+        }
+    };
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+    var categorySetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            selectedMulti : true,
+            dblClickExpand : false,
+            showIcon:false,
+            showLine : true,
+            showTitle:true,
+            fontCss: { 'font-size': '15px;','color':'#0066c'}//统一设置样式
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+            beforeClick : function(treeId, treeNode) {
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                $("#categoryName").html(treeNode.name);
+                // alert(   treeNode.name+ "========"+treeNode.id)
+                $("#categoryId").val(treeNode.id);
+                return true;
+            }
+        }
+    };
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/ztree",
+            "dataType": "json",
+            "success": function (data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+
+</script>
+</@layout>

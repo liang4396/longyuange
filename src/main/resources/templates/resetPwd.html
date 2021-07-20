@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>修改密码</title>
+    <link type="text/css" rel="stylesheet" href="../static/css/login/zhuce.css">
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/common/app.js"></script>
+    <script type="text/javascript" src="/static/js/common/artDialogPlugin.js"></script>
+    <script type="text/javascript" src="/static/js/artDialogPlugin.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/css/dialog/blue.css">
+    <script>
+        $(function () {
+            $('.beijing').css('height', ($(window).height()))
+        })
+
+        $(function () {
+            $('.text').focus(function (e) {
+                $(this).css('background', 'url("../static/img/login/xuanzhongrentou.png") no-repeat 0px 10px');
+
+            });
+            $('.text').blur(function (e) {
+
+                $(this).css('background', 'url("../static/img/login/rentou.png") no-repeat 0px 10px');
+            });
+
+            $('.tel').focus(function (e) {
+                $(this).css('background', 'url("../static/img/login/ltel.png") no-repeat 0px 10px');
+
+            });
+            $('.tel').blur(function (e) {
+
+                $(this).css('background', 'url("../static/img/login/tel.png") no-repeat 0px 10px');
+            });
+        })
+
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+<div class="beijing">
+    <div class="logo_dl">
+        <img src="../static/img/login/logo_dl.jpg" alt="" width="206" height="70" style="float: left;"/>
+        <div class="name_dl">华电龙源阁主题餐厅订餐小程序</div>
+    </div>
+    <div class="mima">
+        <div class="yonghuming_dl">
+            <form id="reset">
+                <div style="padding:5px 0px">
+                    <input type="text" name="username" id="userName" class="text" placeholder="请填写账号"/>
+                </div>
+                <div style="padding:5px 0px">
+                    <input type="password" name="password" id="password" class="password" placeholder="请填写密码"/>
+                </div>
+                <div style="padding:5px 0px">
+                    <input type="password" name="passowrdTwo" id="passowrdTwo" class="password" placeholder="请再次填写密码"/>
+                </div>
+            </form>
+        </div>
+
+        <input type="button" id="resetButton" class="dl_button dgb" value="完    成"/>
+
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+
+        $("#reset").validate({
+            rules: {
+                username: {
+                    required: true
+                },
+                password: {
+                    required: true,
+                },
+                passowrdTwo: {
+                    required: true,
+                }
+            },
+            messages: {
+                username: {
+                    required: "必填"
+                },
+                password: {required: "必填"},
+                passowrdTwo: {
+                    required: "必填",
+                }
+            },
+            errorPlacement: function (error, element) {
+                if(password != passowrdTwo){
+                    App.showMessage("error", "两次密码不一致", function () {
+                    })
+                    return false;
+                }
+            },
+        })
+
+    })
+
+
+    $("#resetButton").click(function () {
+        /*js检验*/
+        if ($("#reset").valid()) {
+            var userName = $("#userName").val();
+            var password = $("#password").val();
+            var passowrdTwo = $("#passowrdTwo").val();
+
+            var reset = {
+                userName: userName,
+                password: password,
+                passowrdTwo: passowrdTwo
+            };
+
+            $.ajax({
+                type: "post",
+                url: "login/resetPwd",
+                data: reset,
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        if (data.code == 200) {
+                            //修改成功跳转页面
+                            App.showMessage("succeed", "密码修改成功！请在再次登录!", function () {
+                            //修改成功跳转登录页面
+                                window.location = "/login";
+                            })
+                        } else {
+                            App.showMessage("error", data.message, function () {
+                            })
+                            return false;
+                        }
+                    }
+                }
+            })
+        }
+    })
+
+</script>
+
+
+</body>
+</html>

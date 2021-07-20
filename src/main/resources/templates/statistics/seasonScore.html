@@ -1,0 +1,148 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<#include "menu.html"/>
+
+<div style="padding:20px 10px" class="con_right">
+    <div class="con_right_top">
+        <h1 class="dl_h1" id="tableName">题库
+        </h1>
+        <div class="dl_blue"></div>
+    </div>
+    <div class="con_right_bottom padding_0">
+        <table style="width:99%" border="1" id="myTable" cellspacing="1" cellpadding="1" class="biaoge">
+        </table>
+    </div>
+    <div style="text-align: center;">
+        <input type="button" class="two_button" onclick="allExport()" value="批量导出">
+    </div>
+</div>
+<!--导出使用选择哪个栏目-->
+<form hidden id="exportExcelpane" action="/seasonScore/exportUserInfos">
+    <input hidden id="seasonId" name="seasonId" value="${seasonId}">
+    <input hidden id="toSeasonId" name="seasonTab" value="${toSeasonId}">
+</form>
+
+<script>
+
+    /*进入页面默认加载目录树 和问题列表*/
+    $(function () {
+
+        openMenu("htgl");//导航栏回显
+        var sid = $("#toSeasonId").val();
+        if (sid == 1){
+            $(document).attr("title", "第一周赛 ");
+            $("#tableName").html("第一周赛");
+        }else if(sid == 2){
+            $(document).attr("title", "第二周赛 ");
+            $("#tableName").html("第二周赛");
+        }else if(sid == 3){
+            $(document).attr("title", "第三周赛 ");
+            $("#tableName").html("第三周赛");
+        }
+        openAdminMenu("season" + sid + "");/*目录添加颜色*/
+
+        loadList();
+    })
+
+
+    var tableList;
+
+    /*加载列表数据*/
+    function loadList(searchValue) {
+
+        var aoData = {
+            seasonId: function () {
+                return $("#seasonId").val();
+            }
+        }
+
+        var width = "60px";
+        var divWidth = "305px";
+        if ($("#roleId").val() == 0) {
+            width = "40px";
+            divWidth = "325px";
+        }
+
+        tableList = $('#myTable').DataTable({
+            "bLengthChange": false,   // 是否改变每页显示行数
+            'iDisplayLength': 15, //每页初始显示5条记录
+            "searching": false,      // 是否显示搜索框
+            "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+            "serverSide": true,       // true表示使用后台分页
+            sPaginationType: "first_last_numbers",  // 显示首页和末页
+            "bInfo": false,
+            "ajax": {
+                "url": "/seasonScore/page",  // 异步传输的后端接口url
+                "type": "POST",      // 请求方式
+                "data": aoData
+            },
+            "columns": [
+                {
+                    title: "序号",
+                    width: "60px",
+                    "class": "align",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                }, // 序号
+                {
+                    title: "微信名",
+                    "class": "tdpd",
+                    data: function (data) {
+                        if(data.address != null && data.address != ""){
+                            return "<div  title=\"" + data.name + "\"><a style='color:blue' href='/user/toHeroDetail?seasonId="+data.seasonId+"&openId="+data.userId+"'>" + data.name + "</a></div>"
+                        }else{
+                            return "<div  title=\"" + data.name + "\"><a style='color:black' href='/user/toHeroDetail?seasonId="+data.seasonId+"&openId="+data.userId+"'>" + data.name + "</a></div>"
+                        }
+                    }
+                }, // 序号
+                {
+                    title: "得分",
+                    "class": "tdpd",
+                    data: function (data) {
+                        return "<div  title=\"" + data.addSocre + "\"><a style='color:black'>" + data.addSocre + "</a></div>"
+                    }
+                }, // 序号
+                {
+                    title: "扣分",
+                    "class": "tdpd",
+                    data: function (data) {
+                        return "<div  title=\"" + data.delSocre + "\"><a style='color:black'>" + data.delSocre + "</a></div>"
+                    }
+                }, // 序号
+                {
+                    title: "总得分",
+                    "class": "tdpd",
+                    data: function (data) {
+                        return "<div  title=\"" + data.allScore + "\"><a style='color:black'>" + data.allScore + "</a></div>"
+                    }
+                }, // 序号
+                {
+                    title: "正确率",
+                    "class": "tdpd",
+                    data: function (data) {
+                        return "<div  title=\"" + data.rightRate + "\"><a style='color:black'>" + data.rightRate + "</a></div>"
+                    }
+                }
+            ]
+        });
+
+        $(tableList.column(0).header()).css("padding", "0px")
+        $(tableList.column(1).header()).css("padding", "0px")
+        $(tableList.column(2).header()).css("padding", "0px")
+        $(tableList.column(6).header()).css("padding", "0px 5px")
+        $(tableList.column(7).header()).css("padding", "0px 5px")
+    };
+
+    function  allExport() {
+        App.showConfirm("question", "确定导出选手得分排行数据？", function () {
+            document.getElementById("exportExcelpane").submit();
+        })
+    }
+</script>
+</@layout>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link type="text/css" rel="stylesheet" href="/static/js/jeDate/skin/jedate.css">
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jeDate/jedate.js"></script>
+
+<body>
+    <form id="season">
+
+    赛季名称:<input type="text" name="seasonName">
+    开始时间:<input class="datainp" name="startTime" id="dateinfo" type="text" placeholder="请选择"  readonly>
+
+
+
+    </form>
+
+    <input type="button" id="saveSeason" value="提交" >
+
+
+
+</body>
+<script>
+    jeDate("#dateinfo", {
+        format:"YYYY-MM-DD hh:mm:ss",
+        isinitVal:true,
+        isTime:true, //isClear:false,
+        minDate:"2014-09-19 00:00:00",
+        okfun:function(val){alert(val)}
+    })
+
+
+    $('#saveSeason').click(function () {
+
+            var season = $('#season').serialize();
+            $.ajax({
+                url: "/season/saveSeason",
+                data: $('#season').serialize(),
+                type: "POST",
+                success: function (data) {
+
+                }
+            })
+
+    });
+</script>
+</html>

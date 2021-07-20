@@ -1,0 +1,122 @@
+<style>
+	.con ul li ul li{/*height:30px;*/ line-height:30px;padding:0;}
+	.con ul li ul li a{ line-height:30px;font-size: 12px;margin:0 0 0 16px; color:#727272;}
+	.tdpd{
+		padding: 0px 0px 0px 5px!important
+	}
+</style>
+<div class="con"> 
+	<ul>
+		<li class="bb current">
+        	<!--<a href="#" class="btn">个人管理</a>-->
+ 			<ul>
+    			<li class="aa" id="user"><a href="/user/info">信息维护</a></li>
+
+				<@security.authorize access="hasRole('CHECKER') or hasRole('DATA') or hasRole('ADMIN')">
+				<li  class="aa" id="checkStatis"><a href="/statistics/toUserCheck">审核统计</a></li>
+				</@security.authorize>
+     			<li  class="aa" ><a href="#" class="wo tu">我的任务</a>
+        			<ul class="level3">
+						<li id="findPending"><a href="/questiondraft/pending">待定题目</a></li>
+						<li id="findmove"><a href="/questiondraft/moveQues">移动题目</a></li>
+						<li id="findupdate"><a href="/questiondraft/updateQues">修订题目</a></li>
+						<li id="findrepeat"><a href="/questiondraft/repeat">重复题目</a></li>
+						<@security.authorize access="hasRole('DATA') or hasRole('ADMIN')">
+						<li id="finddelete"><a href="/questiondraft/deleteQues">删除题目</a></li>
+				        </@security.authorize>
+				        <!--<li id="finddraft"><a href="/questiondraft/draft">未提交</a></li>
+				        <li id="findsubmit"><a href="/questiondraft/submit">已提交</a></li>
+				        <li id="findunpass"><a href="/questiondraft/unpass">未通过</a></li>
+						<li id="unexamine"><a href="/questiondraft/unexamine">未审核</a></li>-->
+					</ul>
+      			</li>
+ 			</ul>
+       	</li>
+	</ul>
+</div>
+<script>
+
+	function openUserMenu(id){
+
+		$("#" + id).addClass("yanse");
+		if($("#" + id).parents(".aa").length != 0){
+			$("#" + id).parents(".aa").addClass("dadong");
+			$("#" + id).addClass("yanse");
+		}
+
+        var width = "45px";
+
+
+
+
+        tableList =  $('#findTable').DataTable({
+            "bLengthChange": false,   // 是否改变每页显示行数
+            "searching" : false,      // 是否显示搜索框
+            "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+            "serverSide": true,       // true表示使用后台分页
+            "bInfo" : false,
+            "iDisplayLength": 15,
+            autoWidth: false,
+            sPaginationType: "first_last_numbers",  // 显示首页和末页
+            "ajax": {
+                "url": "/questiondraft/"+id,  // 异步传输的后端接口url
+                "type": "GET" // 请求方式
+            },
+            "columns": [
+
+
+                {title:"序号",width: "40px","class":"align","data" : null,
+                    "render" : function(data, type, full, meta){
+                        return meta.row + 1 + meta.settings._iDisplayStart;}}, // 序号
+
+                { title:"试题内容", "class":"tdpd",data: function (e) {
+                    if($.trim(id)==$.trim("findPending") || $.trim(id)==$.trim("findrepeat") || $.trim(id)==$.trim("finddelete") ) {
+                        return "<div  style='width:600px; white-space: nowrap;\n" +
+                            "                 overflow: hidden;\n" +
+                            "                 text-overflow: ellipsis;' title=\"" + e.questionDraftBody + "\">" + e.questionDraftBody + "</div>"
+                    }else{
+                        return "<div  style='width:600px; white-space: nowrap;\n" +
+                            "                 overflow: hidden;\n" +
+                            "                 text-overflow: ellipsis;' title=\"" + e.questionBody + "\">" + e.questionBody + "</div>"
+					}
+                    }},
+
+                { title:"操作", width:width, "class":"align",data: function (e) {
+                        if($.trim(id)==$.trim("findPending") ) {
+                            return "<td class=\\\"align\\\" ><a href=\"/questiondraft/draftDetail?id=" + e.questionDraftId + "&&oprate=1" + "\" >查看</a>"
+                        }else if($.trim(id)==$.trim("finddelete") || $.trim(id)==$.trim("findrepeat")){
+                            return "<td class=\\\"align\\\" ><a href=\"/questiondraft/deleteDetail?id=" + e.questionDraftId + "&oprate=2" + "\" >查看</a>"
+						}else{
+                            return "<td class=\\\"align\\\" ><a href=\"/question/detail?id=" + e.questionId + "&oprate=0" + "\" >查看</a>"
+
+						}
+                    }}
+            ]
+        });
+        
+        $(tableList.column(0).header()).css("padding","0px")
+        $(tableList.column(1).header()).css("padding","0px")
+        $(tableList.column(2).header()).css("padding","0px")
+	}
+
+
+    function deleteById(id) {
+    	App.showConfirm("question","确定要删除该数据吗?", function(){
+    		$.ajax({
+                url: "/questiondraft/delete/"+id,
+                type: "delete",
+                success: function (data) {
+                	App.showMessage("succeed", data.message, function(){
+                        /*刷新题目数据*/
+                        tableList.ajax.reload()
+                	})
+                }
+            });
+    	})
+    }
+
+
+	
+
+
+</script>

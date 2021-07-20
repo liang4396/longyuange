@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/zTreeStyle.css">
+    <link rel="stylesheet" href="../static/css/jquery-ui.css">
+</head>
+<body>
+
+
+<div style=" width: 500px;height:200px;overflow-y:scroll;">
+    <ul style=" -moz-user-select: none;" class="ztree"
+        id="Collecttree">
+    </ul>
+</div>
+
+<button value="点击导出" onclick="export1()">导出</button>
+
+<form id="exportExcelpanel"  action="/export/question" style="text-align: center">
+    <p style="margin-top: 5%">确定导出Excel文件吗?(文件可能较大,请耐心等候!)</p>
+</form>
+
+
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.ui.min.js"></script>
+<script type="text/javascript" src="../static/js/jquery.ztree.all-3.5.js"></script>
+<script>
+
+   $(function () {
+        queryCollectTree(collectSetting);
+    })
+   
+   function export1() {
+       document.getElementById("exportExcelpanel").submit();
+   }
+   
+    /* 分类类目树开始 */
+     var zTree;
+    var collectSetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            dblClickExpand : false,
+            showLine : true,
+            selectedMulti : false
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+            beforeClick : function(treeId, treeNode) {
+                var zTree = $.fn.zTree.getZTreeObj("Collecttree");
+
+                $("#collectType").val(treeNode.id);
+                return true;
+            }
+        }
+    };
+    function queryCollectTree(setting) {
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/ztree",
+            "dataType" : "json",
+            "success" : function(data) {
+                zNodes = data;
+                var t = $("#Collecttree");
+                t = $.fn.zTree.init(t, setting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("Collecttree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+
+                zTree.expandNode(rootNode, true, false);
+
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+</script>
+</body>
+</html>

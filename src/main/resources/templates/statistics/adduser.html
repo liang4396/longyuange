@@ -1,0 +1,361 @@
+<#include "../layout/layout.html">
+<@layout>
+	<#include "menu.html"/>
+	<style>
+		.dl_width300 {
+			width: 650px;
+			height: 30px;
+			float: left;
+		}
+		
+		.dl_w_two {
+			width: 550px
+		}
+	</style>
+
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">添加人员</h1>
+                <div class="dl_blue"></div>
+            </div>
+            <div class="con_right_bottom padding_0">
+            	<form id="add">
+                <div class="dl_h">
+                    <div class="user_canshu">
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>姓名：</div>
+                                <div class="dl_w_two">
+									<input id="realname" name="realname" class="dl_text120"
+										style="width: 200px;" type="text" placeholder="请输入姓名">
+								</div>
+							</div>
+                        </div>
+
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>手机号码：</div>
+                                <div class="dl_w_two">
+                                	<input name="phoneNum" id="phoneNum" class="dl_text120" 
+                                	placeholder="请输入手机号码" style="width:200px;" type="text">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>密码：</div>
+                                <div class="dl_w_two">
+                                	<input type="password" readonly name="password" id="password" class="dl_text120" style="width:200px;" type="text">
+                                	<a id="random" href="#" style="text-decoration:underline;font-size:14px; margin:10px 0 0 7px;"> 自动生成</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>权限列表：</div>
+                                <div class="dl_w_two">
+                                	<select id="roleSelect" class="dl_select200">
+	                                    <option value="2">审核</option>
+	                                    <option value="3">数据</option>
+	                                </select>
+                                </div>
+                            </div>
+                        </div>
+						<div id="authMenu" class="auth dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>权限范围：</div>
+                                <div class="dl_w_two">
+                                	<a id="authTreeBtn" style="padding:5px 14px" class="two_button">弹出目录</a>
+                                	<input style="border:0px;hieght:0px;width:0px" name="authCategoryIds" id="authCategoryIds">
+                                </div>
+                                <div style="padding:10px 0px 0px 100px" id="authDiv" class="dl_w_two">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p_center">
+                            <a ><input id="submitBtn" type="button" value="提交" class="two_button"></a>
+                        </div>
+                    </div>
+
+                </div>
+</form>
+<!--导出使用树-->
+		<div hidden id="authTreeDiv">
+			<ul class="ztree" id="authTree">
+			
+			</ul>
+		</div>
+		
+            </div>
+        </div>
+<script>
+var oldSelect;
+$(function() {
+    $(document).attr("title", "添加人员");
+    openMenu("htgl"); //导航栏回显
+    openAdminMenu("adduser");
+    /*目录添加颜色*/
+
+    $.validator.addMethod("checkName",
+    function(value, element, params) {
+        if (value) {
+            var inputNum = value.replace(/[^\x00-\xff]/g, "**").length;
+            if (inputNum > 10) {
+                return false
+            }
+        }
+        return true
+    },
+    "请输入中文不超过5个字英文不超过10个字母长度的昵称");
+
+    jQuery.validator.addMethod("phone",
+    function(value, element) {
+        var length = value.length;
+        var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+        return this.optional(element) || (length == 11 && mobile.test(value));
+    },
+    "请填写正确的手机号码"); //可以自定义默认提示信息
+    $("#add").validate({
+        rules: {
+            realname: {
+                required: true,
+                checkName: true
+            },
+            phoneNum: {
+                required: true,
+                phone: true,
+                remote: {
+                    type: "post",
+                    url: "/user/checkPhone",
+                    data: {
+                        phoneNum: function() {
+                            return $("[name='phoneNum']").val()
+                        }
+                    }
+                }
+            },
+            password: {
+                required: true,
+                digits: true,
+                maxlength: 6,
+                minlength: 6
+            },
+            authCategoryIds:{
+            	required: true,
+            }
+        },
+        messages: {
+            realname: {
+                required: "必填"
+            },
+            phoneNum: {
+                required: "必填",
+                remote: "该手机号已注册"
+            },
+            password: {
+                required: "必填",
+                maxlength: "请输入六位数字密码",
+                minlength: "请输入六位数字密码",
+                digits: "请输入六位数字密码"
+            },
+            authCategoryIds:{
+            	required: "必选",
+            }
+        }
+    })
+
+    //加载树
+    queryAuthTree();
+
+    $("#roleSelect").on("change", function() {
+        let value = $(this).val();
+        if (value != 3) {
+            $("#authMenu").show()
+            if (oldSelect == 3) {
+                authQues();
+            }
+        } else {
+            $("#authMenu").hide()
+            $("#authCategoryIds").val("");
+        }
+
+        oldSelect = value
+    })
+
+    $("#authTreeBtn").on("click", function() {
+        authQues();
+    })
+
+    $("#random").on("click", function() {
+        var Num = "";
+        for (var i = 0; i < 6; i++) {
+            Num += Math.floor(Math.random() * 10);
+        }
+        $("#password").val(Num); 
+        $("#password").valid()
+    })
+
+    $("#submitBtn").on("click", function() {
+    	$(this).prop("disabled", true)
+        if ($("#add").valid()) {
+            $.ajax({
+                type: "post",
+                url: "/user/addUser",
+                data: {
+                    realname: $("#realname").val(),
+                    phoneNum: $("#phoneNum").val(),
+                    password: $("#password").val(),
+                    roleId: $("#roleSelect").val(),
+                    authCategoryIds: $("#authCategoryIds").val()
+                },
+                success: function(result) {
+                	$(this).prop("disabled", false)
+                    if (result.code == "20000") {
+                        App.showMessage("succeed", result.message,
+                        function() {
+                            window.location.reload()
+                        })
+                    } else {
+                        App.showMessage("error", result.message)
+                    }
+                },
+                error: function(e) {
+                	$(this).prop("disabled", false)
+                    App.showMessage("error", "更新失败")
+                }
+            })
+        } else {
+        	$(this).prop("disabled", false)
+        }
+    })
+})
+
+/*导出目录方法*/
+function authQues() {
+    $("#authTreeDiv").dialog({
+        title: "导出问题目录",
+        autoOpen: true,
+        width: 200,
+        modal: true,
+        buttons: {
+            "确定": function() {
+                /*拼接需要导出的目录id 字符串*/
+                var array = "";
+                var zTree = $.fn.zTree.getZTreeObj("authTree");
+                var node = zTree.getCheckedNodes(true);
+                if (node) {
+                    var authDivText = "";
+                    for (var j in node) {
+                        if (node[j].id && node[j].id != 0) {
+                            array += node[j].id + ",";
+                        }
+
+                        authDivText += node[j].name + "</br>"
+                    }
+                    if (array != null && array != "") {
+                        array = array.substr(0, array.length - 1);
+                        $("#authCategoryIds").val(array);
+                        // $("#authDiv").html(authDivText);
+                        // $("#authDiv").parents(".dl_w").css("height", $("#authDiv").css("height"))
+                    } else {
+                        App.showMessage("error", "请选择权限范围！");
+                        return false;
+                    }
+                }
+                $("#authTreeDiv").dialog("close");
+            },
+            "取消": function() {
+                $("#authTreeDiv").dialog("close");
+                var zTree = $.fn.zTree.getZTreeObj("authTree");
+                zTree.checkAllNodes(false);
+                
+                if($("#authCategoryIds").val()){
+        			$.each($("#authCategoryIds").val().split(","), function(i, item){
+        				zTree.checkNode(zTree.getNodeByParam("id", item, null), true); //选中指定节点
+        			})	
+                }
+            }
+        },
+        show: {
+            effect: "fade",
+            duration: 500
+        },
+        hide: {
+            effect: "fade",
+            duration: 500
+        },
+        closeOnEscape: false,
+        beforeClose: function(event, ui) {},
+        close: function(event, ui) {
+            $("#authTreeDiv").dialog("destroy");
+        }
+    });
+}
+
+//查询目录信息方法
+function queryAuthTree(exportTreeSetting) {
+    /* 移动分类类目配置信息 */
+    var exportTreeSetting = {
+        check: {
+            enable: true,
+            nocheckInherit: false,
+            autoCheckTrigger: true,
+            chkboxType: {
+                "Y": "s",
+                "N": "s"
+            }
+        },
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {
+                'font-size': '13px;',
+                'color': '#0066c'
+            } //统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function(treeId, treeNode) {
+                $("#categoryId").val(treeNode.id);
+                return true;
+            }
+        }
+    };
+
+    $.ajax({
+        "type": "post",
+        "url": "/category/ztree",
+        "dataType": "json",
+        "success": function(data) {
+            zNodes = data;
+            var t = $("#authTree");
+            t = $.fn.zTree.init(t, exportTreeSetting, zNodes);
+            var zTree = $.fn.zTree.getZTreeObj("authTree");
+            var rootNode = zTree.getNodeByParam("id", 0);
+            zTree.expandNode(rootNode, true, false);
+            zTree.setting.edit.drag.isCopy = false;
+            zTree.setting.edit.drag.isMove = true;
+            zTree.setting.edit.drag.prev = true;
+            zTree.setting.edit.drag.inner = true;
+            zTree.setting.edit.drag.next = true;
+        }
+    });
+
+}
+</script>
+</@layout>

@@ -1,1 +1,29 @@
+server:
+  port: 8110  #\u7AEF\u53E3\u53F7
 
+spring:
+  profiles:
+    active: dev #\u73AF\u5883\u914D\u7F6E
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://115.29.140.84:3306/longyuange?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    username: root
+    password: xiaopihai
+  freemarker:
+    template-loader-path: classpath:/templates/
+    suffix: .html
+    content-type: text/html
+    charset: UTF-8
+  thymeleaf:
+    cache: false
+
+mybatis-plus: #mybatis
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/xml/*.xml
+
+
+#\u4E0D\u9700\u8981\u767B\u5F55\u7684\u63A5\u53E3
+match:
+  antMatchers: /index,/login/**,/favicon.ico,/defaultKaptcha,/static/**,/resetPwd

@@ -1,0 +1,392 @@
+    <#include "../layout/layout.html">
+    <@layout>
+    <link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+    <link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/shujuzhengli.css" >
+    <style>
+    	.biaoge td { border: 0px solid #999;font-size:16px}
+    </style>
+    <script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<!--    <div class="con">
+        <ul  class="ztree" id="categoryTree">
+        </ul>
+        </div>-->
+        <div style=" width:1100px" class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1" id="categoryName">  </h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_w">
+                    <div class="dl_width200" style="width:500px;">
+                        <div class="dl_w_one"><em></em>问题：</div>
+                        <div class="dl_w_two" id="quesBody"></div>
+                    </div>
+					
+                </div>
+				
+				<div class="dl_w">
+                            <div class="dl_width300" >
+									<div class="dl_w_one"><em></em>难度：</div>
+									<div class="dl_w_two" id="diff">
+
+									</div>
+							</div>
+                            
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em></em>A：</div>
+                        <div class="dl_w_two" id="a"></div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em></em>B：</div>
+                        <div class="dl_w_two" id="b"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em></em>C：</div>
+                        <div class="dl_w_two" id="c"></div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em></em>D：</div>
+                        <div class="dl_w_two" id="d" ></div>
+                    </div>
+                </div>
+
+                <table hidden style=" margin: 0;width:700px" id="UpdateLogDiv" class="biaoge dataTable no-footer">
+                	<tr>
+                		<td style="width:140px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0); ">出题者微信名：</td>
+                		<td style="width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="importer"></td>
+                		<td style=" width:110px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">提交时间：</td>
+                		<td style="width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="registTime"></td>
+                	</tr>
+                	<tr>
+                		<td style="width:140px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">审核人员：</td>
+                		<td style="width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="checker"></td>
+                		<td style="width:110px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);">入库时间：</td>
+                		<td style="width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);" id="editTime"></td>
+                	</tr>
+                </table>
+
+            </div>
+			<div style="text-align: center;">
+                <input id="adminUpdate" hidden type="button"  class="two_button" onclick="javascript:toUpdate();" value="编辑" style="padding:10px 20px;font-size:20px;">
+                <input id="adminMove" hidden type="button"  class="two_button" onclick="javascript:moveQues();" value="移动" style="padding:10px 20px;font-size:20px;">
+            	<input type="button"  class="two_button" onclick="javascript:history.back(-1);" value="返回" style="padding:10px 20px;font-size:20px;">
+            </div>
+
+        </div>
+        <input type="hidden" id="categoryId"><!--目录id隐藏域-->
+        <input type="hidden" id="questionId"><!--目问题id隐藏域-->
+        <div hidden id="moveDiv">
+        <ul class="ztree" id="moveTree">
+
+        </ul>
+    </div>
+    </div>
+    <@security.authorize access="hasRole('CHECKER') or hasRole('INPUTER')">
+    <input hidden id="roleId" value="0">
+    </@security.authorize>
+    <@security.authorize access="hasRole('DATA')  or hasRole('ADMIN')">
+    <input hidden id="roleId" value="1">
+    </@security.authorize>
+</div>
+</div>
+</div>
+</body>
+<script>
+    $(function () {
+    	$(document).attr("title","试题展示-详情");
+    	openMenu("stzs");//目录回显
+        loadQuestion();/*加载题目信息*/
+
+        /* queryCategoryTree(categorySetting);/!*获取目录树*!/*/
+       /* setTimeout("openTree()","200");   /!*展开题目目录*!/*/
+    });
+
+    function loadQuestion(){
+        var id=getUrlParam("id");
+        var oprate = getUrlParam("oprate");
+        $.ajax({
+            url: "/questiondraft/findOne/"+id+"/"+oprate,
+            type: "GET",
+            success: function (data) {
+                $("#questionId").val(id);
+                if (oprate == 1){
+                    $('#quesBody').html(data.data.questionDraftBody);
+                    $('#categoryId').val(data.data.categoryId);
+
+                }else {
+                    $('#quesBody').html(data.data.questionBody);
+                    $('#categoryId').val(data.data.categoryId);
+                }
+                $('#diff').html(data.data.difficulty == 0 ? "高级": data.data.difficulty ==1? "中级":"低级" );
+                $('#a').html(data.data.a);
+                $('#b').html(data.data.b);
+                $('#c').html(data.data.c);
+                $('#d').html(data.data.d);
+                $('#rightAns').html(data.data.rightanswer);
+                //如果是管理员或者数据权限的人 则可以看见
+                if(oprate == "0" && $("#roleId").val() == 1 ) {
+                    //提交时间
+                    $('#registTime').html(data.data.registTime);
+                    //输入人员
+                    $('#importer').html(data.data.importer);
+                    //审核人员
+                    $('#checker').html(data.data.checker);
+                    //入库时间
+                    $('#editTime').html(data.data.editTime);
+                    $("#UpdateLogDiv").show();
+                    $("#adminUpdate").show();
+                    $("#adminMove").show();
+                }
+                var logList = data.data.updateLog
+                if(logList!=null){
+                    var html=""
+                    for (var i = 0;i<logList.length;i++){
+                        html +="<tr>";
+                        html +=" <td style='width:90px;border-left: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += " 修订人员 : </td>";
+                        html +=" <td style='width:260px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>" +logList[i].userName+"  </td>";
+                        html +=" <td style='width:90px;border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += " 修订时间 : </td>";
+                        html +=" <td style='width:260px;border-right: 1px solid rgb(0, 0, 0);border-bottom: 1px solid rgb(0, 0, 0);border-top: 1px solid rgb(0, 0, 0);'>";
+                        html += logList[i].updateLogTime;
+                        html +="</td></tr>";
+                    }
+                    $("#UpdateLogDiv").append(html);
+                }
+                showCategoryName(data.data.categoryId);//展示目录名称信息
+            }
+        })
+    }
+    /*编辑跳转页面方法*/
+    function toUpdate() {
+        var questionId = $("#questionId").val();
+        window.location.href ="/question/update?id=" + questionId + "&&oprate=0";
+    }
+    /*展示题目上方目录信息*/
+    function showCategoryName(categoryId) {
+        $.ajax({
+            type: "post",
+            url: "/category/findNamePathById",
+            data: {"categoryId": categoryId},
+            dataType: "json",
+            success: function (data) {
+                if(data.flag){
+                    $("#categoryName").html(data.data);
+                }
+            }
+        });
+    }
+
+    /*移动目录方法*/
+    function moveQues() {
+       var categoryId = $("#categoryId").val();
+       var questionId = $("#questionId").val();
+        //加载树
+        queryMoveTree(moveTreeSetting, categoryId);
+        var oprate = 0;/*0：表示正式表数据 1 表示移动草稿表数据*/
+        $("#moveDiv").dialog({
+            title: "问题移动目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "移动": function () {
+                    var categoryId = $('#categoryId').val();
+                    if(categoryId){
+                    	$.ajax({
+                            url: "/questiondraft/moveQuestion/" + questionId + "/" + categoryId + "/" + oprate,
+                            type: "Put",
+                            success: function (data) {
+                                App.showMessage("succeed", data.message, function(){
+                                    $("#moveDiv").dialog("close");
+                                    window.location.reload();
+                                })
+                            }
+
+                        });
+                    } else {
+                    	App.showMessage("warning", "请选择移动目录")
+                    }
+                },
+                "取消": function () {
+                    $("#moveDiv").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#moveDiv").dialog("destroy");
+            }
+        });
+    }
+
+
+    /*展开题目目录*/
+    function openTree() {
+        var categoryId = $("#categoryId").val();
+        var data = {
+            "categoryId":categoryId
+        }
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/findParentId",
+            "dataType" : "json",
+            "data":data,
+            "success" : function(data) {
+                if(data!=null){
+                    var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                    zTree.expandNode(zTree.getNodeByParam("id",data,null));//展开指定节点
+                    zTree.selectNode(zTree.getNodeByParam("id",categoryId,null));//选中指定节点
+                }
+            }
+        });
+    }
+
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/ztree",
+            "dataType" : "json",
+            "success" : function(data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+
+    //查询移动目录信息方法
+    function queryMoveTree(moveTreeSetting, categoryId) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/findParentId",
+            "data": {"categoryId": categoryId},
+            "dataType": "json",
+            "success": function (dataParenId) {
+                $.ajax({
+                    "type": "post",
+                    "url": "/category/ztree",
+                    "dataType": "json",
+                    "success": function (data) {
+                        zNodes = data;
+                        var t = $("#moveTree");
+                        t = $.fn.zTree.init(t, moveTreeSetting, zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("moveTree");
+                        var rootNode = zTree.getNodeByParam("id", 0);
+                        zTree.expandNode(rootNode, true, false);
+                        zTree.setting.edit.drag.isCopy = false;
+                        zTree.setting.edit.drag.isMove = true;
+                        zTree.setting.edit.drag.prev = true;
+                        zTree.setting.edit.drag.inner = true;
+                        zTree.setting.edit.drag.next = true;
+                        if (dataParenId != null) {
+                            zTree.expandNode(zTree.getNodeByParam("id", dataParenId, null));//展开指定节点
+                            zTree.selectNode(zTree.getNodeByParam("id", categoryId, null));//选中指定节点
+                            $("#categoryId").val(categoryId);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+  var categorySetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            selectedMulti : true,
+            dblClickExpand : false,
+            showIcon:false,
+            showLine : true,
+            showTitle:true,
+            fontCss: { 'font-size': '15px;','color':'#0066c'}//统一设置样式
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+        }
+    };
+
+    /* 移动分类类目配置信息 */
+    var moveTreeSetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function (treeId, treeNode) {
+            	$("#categoryId").val("");
+            	if(!treeNode.isParent){
+                    $("#categoryId").val(treeNode.id);
+            	}
+                return true;
+            }
+        }
+    };
+
+
+
+</script>
+</@layout>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="css/zhanghaoweihu.css" >
+    <link type="text/css" rel="stylesheet" href="css/gonggong.css" >
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script>
+        $(function(){
+            $('.con .btn').click(function(e) {
+                $(this).parent().toggleClass('current');
+                <!--$(this).next("ul").slideToggle();-->
+                $(this).parent().siblings().removeClass('current');
+            });
+
+            $('.user_btn').click(function(e) {
+
+                $(this).next('ul').stop().slideToggle(300);
+
+
+            });
+			
+			
+			$(".hgb").click(function () {
+				window.location.href="houtai.html"
+
+			})
+			
+			
+			
+            $(".juzhong").css('min-height',$(window).height());
+        })
+    </script>
+</head>
+<body class="jb">
+<div class="juzhong" >
+    <div class="top_nav">
+        <div class="width_900">
+            <div class="zhuye"><a>设置主页</a>丨<a>加入收藏</a></div>
+            <div class="zhuce">
+                <div class="zc_dl"><a>登录</a></div>
+                <!-- <div class="zc_hd"><a>回到信锚网</a></div>
+                 <div class="zc_ht"><a>进入后台</a></div> -->
+            </div>
+        </div>
+    </div>
+    <div class="white">
+
+        <div class="dl_top">
+            <div class="logo">
+                <div><img src="images/logo2.gif" alt="" width="150" class="logo2"/></div>
+                <div>
+                    <img src="images/shuxian.png" alt="" class="shuxian"/>
+                </div>
+                <div class="pingtai">
+                    电力王者知识库输入系统
+                </div>
+            </div>
+            <!--<div class="name">-->
+            <!--<p><span class="blue">用户名：</span>xinmao01</p>-->
+            <!--<a href="#" class="font_14">回到【信锚网】</a>-->
+            <!--</div>-->
+        </div>
+    </div>
+    <div class="nav">
+			<ul>
+				<li class="top" ><a href="luru.html">录入题</a></li>
+				<li class="top" ><a href="../../templates/question.html">题库</a>
+					<!--<ul  class="down">
+						<li><a href="#" >待录入题库</a></li>
+						<li><a href="#" >全部题库</a></li>
+					</ul>-->
+				</li>
+				<li class="top" ><a href="../../templates/check.html">审核</a>
+					
+				</li>
+				<li class="top" style="background:#ffcd7e;"><a href="houtai.html">后台管理</a></li>
+			</ul>
+			
+			<div class="dl_btn">
+                <span></span>
+                <input type="text" class="text">
+                <input type="button" class="sousuo" value="搜索">
+            </div>
+    </div>
+
+
+    <div class="neirong">
+        <div class="con">
+            <ul>
+                <li class="bb current">
+                    <a href="#" class="btn">账号管理</a>
+                    <ul>
+                        <li  class="yanse"><a href="shenfe.html">账号维护</a></li>
+                        <li ><a href="../../templates/check.html">账号审核</a></li>
+                    </ul>
+                </li>
+				<li class="bb">
+                    <a href="#" class="btn">数据统计</a>
+                    <ul>
+                        <li ><a href="tongji.html">题目统计</a></li>
+						
+                    </ul>
+                </li>
+                
+            </ul>
+        </div>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">账号管理</h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    <div class="lg_con">
+                        <div class="user">
+                            <div class="user_con">
+                                <ul>
+                                    <li class="user_current">
+                                        <a href="javascript:;" class="user_btn">数据</a>
+                                        <ul>
+                                            <li><a href="javascript:;">董大哥</a></li>
+                                            <li><a href="javascript:;">董大神</a></li>
+                                            <li><a href="javascript:;">董大佬</a></li>
+                                        </ul>
+                                    </li>
+                                    <li >
+                                        <a href="javascript:;" class="user_btn">审核</a>
+                                        <ul>
+                                            <li><a href="javascript:;">董小弟</a></li>
+                                            <li><a href="javascript:;">董小弟</a></li>
+                                            <li><a href="javascript:;">董小弟</a></li>
+                                        </ul>
+                                    </li>
+                                    <li >
+                                        <a href="javascript:;" class="user_btn">输入</a>
+                                        <ul>
+                                            <li><a href="javascript:;">没地位</a></li>
+                                            <li><a href="javascript:;">没地位</a></li>
+                                            <li><a href="javascript:;">弟中弟</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="user_canshu">
+                        <div class="dl_w">
+                            <div class="dl_width158">
+                                <div class="dl_w_one w_80"><em>*</em>姓名：</div>
+                                <div class="dl_w_two">董大神</div>
+                            </div>
+                            <div class="dl_width158">
+                                <div class="dl_w_one w_80"><em></em>性别：</div>
+                                <div class="dl_w_two">男
+                                    <!--<input type="text"class="dl_text80">-->
+                                </div>
+                            </div>
+                            <div class="dl_width158">
+                                <div class="dl_w_one w_80"><em>*</em>编号：</div>
+                                <div class="dl_w_two">6111</div>
+                            </div>
+                        </div>
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>手机号码：</div>
+                                <div class="dl_w_two">13811101101</div>
+                            </div>
+                        </div>
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>权限列表：</div>
+                                <div class="dl_w_two">
+
+                                  产品管理—技术小弟
+
+
+                                
+                                </div>
+                            </div>
+                        </div>
+						
+						<div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>原密码：</div>
+                                <div class="dl_w_two"><input type="password" class="dl_text120"></div>
+                            </div>
+                        </div>
+						
+						<div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>新密码：</div>
+                                <div class="dl_w_two"><input type="password" class="dl_text120"></div>
+                            </div>
+                        </div>
+						
+						<div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em>*</em>确认密码：</div>
+                                <div class="dl_w_two"><input type="password" class="dl_text120"></div>
+                            </div>
+                        </div>
+						
+                        <div class="p_center">
+                            
+                            <a ><input type="button" value="提交" class="two_button"></a>
+                            <a ><input type="button" value="返回" class="two_button hgb"></a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

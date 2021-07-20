@@ -1,0 +1,186 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<#include "menu.html"/>
+<form id="update">
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">信息维护</h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    
+
+                    <div class="user_canshu">
+                    	<div class="dl_w">
+                            <div class="dl_width500">
+                            	<input style="border:none;width:0px;height:0px" type="text" name="username" >
+								<input style="border:none;width:0px;height:0px" type="password" name="password">
+                                <div class="dl_w_one w_80"><em>*</em>原密码：</div>
+                                <div class="dl_w_two"><input name="old" readonly type="password" class="old dl_text120"></div>
+                            </div>
+                        </div>
+						
+						<div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em>*</em>新密码：</div>
+                                <div class="dl_w_two"><input name="new" type="password" class="new new_password dl_text120"></div>
+                            </div>
+                        </div>
+						
+						<div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em>*</em>确认密码：</div>
+                                <div class="dl_w_two"><input name="confirm" type="password" class="confirm confirm_password dl_text120"></div>
+                            </div>
+                        </div>
+						
+                        <div class="p_center">
+                            
+                            <a ><input type="button" value="提交" class="submit two_button"></a>
+                            <input id="returnBtn" type="button" value="返回" class="two_button hgb">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+</form>
+<div id="dialog"></div>
+<script>
+    $(function(){
+    	$(document).attr("title","修改密码");
+        openMenu("grgl");
+        openUserMenu("user");
+        
+        $.validator.addMethod("checkPassword",function(value,element,params){ 
+            var checkEmail = /^(?![0-9]+$)(?![a-zA-Z]+$)(?!([^(0-9a-zA-Z)]|[])+$)([^(0-9a-zA-Z)]|[]|[a-zA-Z]|[0-9]){6,}$/; 
+            return this.optional(element)||(checkEmail.test(value)); 
+        },"请输入包含数字字母的六位数密码"); 
+        
+        $.validator.addMethod("checkOldPassword",function(value,element,params){ 
+        	var result = false
+            $.ajax({
+            	type:"post",
+            	url:"/user/checkPassword",
+            	async:false,
+            	data:{
+    				password:function(){
+    					return $(".old").val();
+    				}
+    			},
+    			success:function(obj){
+    				result = obj;
+    			},
+    			error:function(){
+    				return false;
+    			}
+            })
+            return result
+        },"原密码输入错误"); 
+        
+        jQuery.validator.addClassRules({
+        	old: {
+        		required: true,
+        		checkOldPassword:true
+        	},
+        	"new": {
+        		required: true,
+        		digits:true,
+        		maxlength:6,
+        		minlength:6
+        	},
+        	confirm: {
+        		required: true,
+        		equalTo: ".new"
+        	}
+        });
+        
+        jQuery.extend(jQuery.validator.messages, {
+        	required: "必填",
+        	maxlength: "请输入六位数字密码",
+        	minlength: "请输入六位数字密码",
+        	digits: "请输入六位数字密码",
+        	equalTo: "两次输入密码不一致"
+        });
+        
+        $(".old").on("focus",function(){
+        	$(this).prop("readonly",false);
+        	$(this).removeAttr("name")
+        })
+        
+        $(".old").on("blur",function(){
+        	$(this).attr("name", "old");
+        	valid();
+        })
+        
+        $(".new").on("focus",function(){
+        	$(this).removeAttr("name")
+        })
+        
+        $(".new").on("blur",function(){
+        	$(this).attr("name", "new");
+        	$("#update").valid()
+        })
+        
+        $(".confirm").on("focus",function(){
+        	$(this).removeAttr("name")
+        })
+        
+        $(".confirm").on("blur",function(){
+        	$(this).attr("name", "confirm");
+        	$("#update").valid()
+        })
+        
+        $("#update").validate({
+        	onkeyup:false,
+        	onfocusout:false
+        });
+        
+        $(".submit").on("click",function(){
+        	if($("#update").valid()){
+        		update();	
+        	}
+        })
+        
+        $("#returnBtn").on("click", function(){
+        	history.go(-1)
+        })
+    })
+    
+    function valid(){
+    	if($("[name='old']")){
+    		$("#update").valid()	
+    	} else {
+    		valid();
+    	}
+    }
+    
+    function update(){
+    	$.ajax({
+            type:"put",
+            url:"/user/updatePwd",
+            data:{
+            	oldPassword:$(".old").val(),
+		    	password:$(".new").val(),
+		    	aginPassword:$(".confirm").val()
+            },
+            success:function(result){
+            	if(result.code == "20000"){
+            		App.showMessage("succeed", result.message, function(){
+            			window.location = "/logout"
+            		})
+            	} else {
+            		App.showMessage("error", result.message)
+            	}
+            },
+            error:function(e){
+            	App.showMessage("error", "更新失败")
+            }
+        })
+    }
+</script>
+</@layout>

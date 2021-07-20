@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="css/caozuojilu.css" >
+    <link type="text/css" rel="stylesheet" href="css/gonggong.css" >
+    <style>
+        .lghz,.csz,.lgs_con{height:210px;overflow-y: scroll;}
+        .lghz h6,.csz h6,.lgs_con h6{margin:0 0 0 0;}
+
+    </style>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script>
+        $(function(){
+            $('.con .btn').click(function(e) {
+                $(this).parent().toggleClass('current');
+                <!--$(this).next("ul").slideToggle();-->
+                $(this).parent().siblings().removeClass('current');
+            });
+
+            $('.lgs_con .lgs_btn').click(function(e) {
+                $(this).parent().toggleClass('lgs_current');
+                $(this).parent().siblings().removeClass('lgs_current')
+            });
+			
+			$('.con .wo').click(function(e) {
+                $(this).parent().toggleClass('dadong');
+				 $(this).parent().siblings().removeClass('dadong');
+                
+            });
+			
+			
+			
+			
+			$(".cl1").bind("click", function () {
+                $(".chbox").attr("checked", true);
+            });
+			
+            $(".juzhong").css('min-height',$(window).height());
+        })
+    </script>
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="top_nav">
+        <div class="width_900">
+            <div class="zhuye"><a>设置主页</a>丨<a>加入收藏</a></div>
+            <div class="zhuce">
+                <div class="zc_dl"><a>登录</a></div>
+                <!-- <div class="zc_hd"><a>回到信锚网</a></div>
+                 <div class="zc_ht"><a>进入后台</a></div> -->
+            </div>
+        </div>
+    </div>
+    <div class="white">
+
+        <div class="dl_top">
+            <div class="logo">
+                <div><img src="images/logo2.gif" alt="" width="150" class="logo2"/></div>
+                <div>
+                    <img src="images/shuxian.png" alt="" class="shuxian"/>
+                </div>
+                <div class="pingtai">
+                    电力王者知识库输入系统
+                </div>
+            </div>
+            <!--<div class="name">-->
+            <!--<p><span class="blue">用户名：</span>xinmao01</p>-->
+            <!--<a href="#" class="font_14">回到【信锚网】</a>-->
+            <!--</div>-->
+        </div>
+    </div>
+    <div class="nav">
+			<ul>
+				<li class="top" ><a href="luru.html">录入题</a></li>
+				<li class="top" ><a href="tiku.html">题库</a>
+					<!--<ul  class="down">
+						<li><a href="#" >待录入题库</a></li>
+						<li><a href="#" >全部题库</a></li>
+					</ul>-->
+				</li>
+				<li class="top" style="background:#ffcd7e;"><a href="shenhe.html">审核</a>
+					
+				</li>
+				<li class="top" ><a href="houtai.html">后台管理</a></li>
+			</ul>
+			
+			<div class="dl_btn">
+                <span></span>
+                <input type="text" class="text">
+                <input type="button" class="sousuo" value="搜索">
+            </div>
+    </div>
+
+
+    
+        
+        <div class="con_right" style="width:1000px;">
+            <div class="con_right_top">
+                <h1 class="dl_h1">审核<!--<a href="tianjiacanshu.html"><input type="button" value="修改/新增参数"class="top_button"/></a>--></h1>
+				
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <table border="1" cellspacing="1" cellpadding="1" class="biaoge">
+                    <tbody>
+						<tr>
+							<th class="br"><input type="checkbox" class="chbox cl1" ></th>
+							<th class="xh bl">序号</th>
+							<th> 目录</th>
+							<th style="width:500px;">试题内容</th>
+							
+							<th style="width:100px;">正确答案</th>
+							<th style="width:150px;">
+								操作
+							</th>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">1</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="chakan.html">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">2</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">3</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">4</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">5</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">6</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">7</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						<tr>
+							<td class="br"><input type="checkbox" class="chbox" ></td>
+							<td class="align bl">8</td>
+							<td>电气原理</td>
+							   <td><a href="#">2电流的单位是什么？</a></td>
+							   
+							   <td>安培</td>
+							<td class="align"><a href="#">查看</a><span>丨<a href="#">移动</a><span >丨<a href="#">入库</a><span >丨</span><a href="#">删除</a></td>
+						</tr>
+						
+					
+
+
+
+
+
+					</tbody>
+				</table>
+				
+				
+				<div class="fenye" style="height:25px;">
+                    <ul>
+                        <li class="left-yuanjiao">«</li>
+                        <li>1</li>
+                        <li>2</li>
+                        <li>3</li>
+                        <li>4</li>
+                        <li>5</li>
+                        <li>...</li>
+
+                        <li>100</li>
+                        <li class="right-yuanjiao">»</li>
+                    </ul>
+                </div>
+                
+                <!--<div class="dl_w dl_em">
+                    <div class="dl_width600" style="width:500px;">
+                        <div class="dl_w_one"><em></em>参数枚举：</div>
+                        <div class="dl_w_two">
+                            系统带入
+                        </div>
+                    </div>
+                </div>-->
+
+
+
+            </div>
+			<div style="text-align: center;">
+                    <input type="button" class="two_button" value="批量入库"> 
+                </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+</body>
+</html>

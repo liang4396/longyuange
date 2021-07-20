@@ -1,0 +1,273 @@
+<#include "../layout/layout.html">
+<@layout>
+	<style>
+	.dl_width350 {
+		width: 650px;
+		height: 30px;
+		float: left;
+	}
+	
+	.dl_w_two {
+		width: 550px
+	}
+	</style>
+
+	<div style="border: none; width: 100%;" class="con_right">
+		<div style="display: flex; justify-content: center"
+			class="con_right_top">
+			<div style="width: 40%" class="dl_h">
+				<h1 class="dl_h1">完善信息后再进行后续操作</h1>
+				<div class="dl_blue"></div>
+			</div>
+		</div>
+		<div style="display: flex; justify-content: center"
+			class="con_right_bottom padding_0">
+			<div class="dl_h">
+				<div style="margin-left:250px" class="user_canshu">
+					<form id="update">
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em></em>姓名：
+								</div>
+								<div class="dl_w_two" id="realname"></div>
+							</div>
+	
+						</div>
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em>*</em>昵称：
+								</div>
+								<div class="dl_w_two">
+									<input id="myname" name="myname" class="dl_text120"
+										style="width: 200px;" type="text" placeholder="请确认昵称">
+								</div>
+							</div>
+						</div>
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em></em>手机号码：
+								</div>
+								<div class="dl_w_two" id="phoneNum"></div>
+							</div>
+						</div>
+	
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em>*</em>邮箱：
+								</div>
+								<div class="dl_w_two">
+									<input placeholder="请输入邮箱" type="text" id="myemail"
+										name="myemail" value="" style="width: 200px;"
+										class="dl_text120" />
+								</div>
+							</div>
+						</div>
+					</form>
+					<form id="pwd">
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<input style="border: none; width: 0px; height: 0px" type="text"
+										name="username"> <input
+										style="border: none; width: 0px; height: 0px" type="password"
+										name="password"> <em>*</em>密码：
+								</div>
+								<div class="dl_w_two">
+									<input type="password" name="new" value=""
+										class="new dl_text120" placeholder="请输入密码" />
+								</div>
+							</div>
+						</div>
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em>*</em>确认密码：
+								</div>
+								<div class="dl_w_two">
+									<input type="password" name="confirm" value=""
+										class="confirm dl_text120" placeholder="请确认密码" />
+								</div>
+							</div>
+						</div>
+	
+						<div class="dl_w">
+							<div class="dl_width350">
+								<div class="dl_w_one w_80">
+									<em></em>权限列表：
+								</div>
+								<div class="dl_w_two" id="roleName"></div>
+							</div>
+						</div>
+					</form>
+					<div class="p_center">
+						<a><input type="button" value="提交" class="submit two_button"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+    	$(function(){
+    		$(document).attr("title","完善信息");
+    		var timer="";
+            var nums=60;
+            var validCode=true;
+    		
+    		openMenu("grgl");
+    		
+    		$.validator.addMethod("checkPassword",function(value,element,params){ 
+                var checkEmail = /^(?![0-9]+$)(?![a-zA-Z]+$)(?!([^(0-9a-zA-Z)]|[])+$)([^(0-9a-zA-Z)]|[]|[a-zA-Z]|[0-9]){6,}$/; 
+                return this.optional(element)||(checkEmail.test(value)); 
+            },"请输入包含数字字母的六位数密码");
+    		
+    		$.validator.addMethod("checkName",function(value,element,params){
+    			if(value){
+    				var inputNum = value.replace(/[^\x00-\xff]/g, "**").length;
+        			if(inputNum > 10){
+        				return false
+        			}
+    			}
+    			return true
+            },"请输入中文不超过5个字英文不超过10个字母长度的昵称");
+    		
+    		jQuery.validator.addClassRules({
+            	"new": {
+            		required: true,
+            		digits:true,
+            		maxlength:6,
+            		minlength:6
+            	},
+            	confirm: {
+            		required: true,
+            		equalTo: ".new"
+            	}
+            });
+            
+            jQuery.extend(jQuery.validator.messages, {
+            	required: "必填",
+            	maxlength: "请输入六位数字密码",
+            	minlength: "请输入六位数字密码",
+            	digits: "请输入六位数字密码",
+            	equalTo: "两次输入密码不一致"
+            });
+            
+            $(".new").on("focus",function(){
+            	$(this).removeAttr("name")
+            })
+            
+            $(".new").on("blur",function(){
+            	$(this).attr("name", "new");
+            	$("#pwd").valid()
+            	$("#update").valid()
+            })
+            
+            $(".confirm").on("focus",function(){
+            	$(this).removeAttr("name")
+            })
+            
+            $(".confirm").on("blur",function(){
+            	$(this).attr("name", "confirm");
+            	$("#pwd").valid()
+            	$("#update").valid()
+            })
+    		
+    		$("#update").validate({
+                rules: {
+                	myname: {
+                		required:true,
+                		checkName:true,
+                		remote: {
+                			type:"post",
+                			url:"/user/checkUsername",
+                			data:{
+                				username: function(){
+                					return $("[name='myname']").val()
+                				}
+                			}
+                		}
+    				},
+                	myemail: {
+                		required:true,
+                		email:true,
+                		remote: {
+                			type:"post",
+                			url:"/user/checkEmail",
+                			data:{
+                				email: function(){
+                					return $("[name='myemail']").val()
+                				}
+                			}
+                		}
+                	}
+                },
+                messages: {
+                	myname: {required: "必填",remote:"该昵称已注册"},
+                	myemail: {required: "必填",email:"请输入正确邮箱地址",remote:"该邮箱已注册"},
+                }
+            })
+    		
+            $("#pwd").validate({
+	        	onkeyup:false,
+	        	onfocusout:false
+	        });
+            
+    		$.ajax({
+            	type:"get",
+            	url:"/user/currect",
+            	data:{},
+            	success:function(result){
+            		let obj = result.data
+            		$(".dl_w_two").each(function(index, item){
+            			let id = item.id
+            			$(item).html(obj[id]);
+            		})
+            		$(".dl_text120").each(function(index, item){
+            			let id = item.id
+            			$(item).val(obj[id]);
+            		})
+            	},
+            	error:function(e){
+            		
+            	}
+            })
+            
+            $(".submit").on("click",function(){
+            	let pwdV = $("#pwd").valid()
+            	let upV = $("#update").valid()
+            	if(upV && pwdV){
+                	update();	
+            	}
+            })
+    	})
+    	
+    	function update(){
+    		$.ajax({
+            	type:"put",
+            	url:"/user/firstUpdate",
+            	data:{
+            		username:$("#myname").val(),
+		    		password:$(".new").val(),
+		    		aginPassword:$(".confirm").val(),
+		    		email:$("#myemail").val()
+            	},
+            	success:function(result){
+            		if(result.code == "20000"){
+            			App.showMessage("succeed",result.message, function(){
+            				window.location = "/logout"
+            			})
+                	} else {
+                		App.showMessage("error",result.message)
+                	}
+            	},
+            	error:function(e){
+            		App.showMessage("error","更新失败")
+            	}
+            })
+    	}
+    </script>
+</@layout>

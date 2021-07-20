@@ -1,0 +1,75 @@
+<#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
+<#macro layout>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head lang="en">
+    <meta charset="UTF-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge, chrome=1"></meta>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <#include "css.html">
+    <#include "js.html">
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="top_nav">
+        <div class="width_900">
+            <div class="zhuye"><a href="javascript:void(setHome(this,window.location))">设置主页</a>丨<a href="javascript:void(addFavourite($('title').html(),location.href))">加入收藏</a></div>
+            <div class="zhuce">
+                <div class="zc_dl">
+                <@security.authorize access="hasRole('INPUTER') or hasRole('CHECKER') or hasRole('DATA')  or hasRole('ADMIN')">
+                <a>欢迎你, <@security.authentication property="principal.username"></@security.authentication></a>
+                </@security.authorize>
+                <span  hidden id="hiddenUserId"><@security.authentication property="principal.userId"></@security.authentication></span>
+                <a style="margin-left:10px" href="/logout">退出登录</a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="white">
+
+        <div class="dl_top">
+            <div class="logo">
+                <div><img src="/static/ceeemall/images/logo2.gif" alt="" width="150" class="logo2"/></div>
+                <div>
+                    <img src="/static/ceeemall/images/shuxian.png" alt="" class="shuxian"/>
+                </div>
+                <div class="pingtai">出题侠后台审核系统</div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <ul>
+            <li class="top" id="stzs"><a href="/search/index">试题展示</a>
+            </li>
+            
+            <@security.authorize access="hasRole('CHECKER') or hasRole('DATA')  or hasRole('ADMIN')">
+            	<li class="top" id="shxg"><a href="/questiondraft/check">审核修改</a></li>
+            </@security.authorize>
+            
+            <li class="top" id="grgl"><a href="/user/info">个人管理</a></li>
+
+            <@security.authorize access="hasRole('DATA')  or hasRole('ADMIN')">
+            	<li class="top" id="htgl"><a href="/statistics">后台管理</a></li>
+            	<li class="top" id="xtkf"><a href="/sysnewsView/announcement">系统客服</a></li>
+            </@security.authorize>
+        </ul>
+
+        <div class="dl_btn">
+            <span></span>
+            <input type="text" id="searchInput" class="text">
+            <input type="button" class="sousuo" id="searchButton" onclick="searchButtonClick()" value="搜索">
+        </div>
+    </div>
+
+
+    <div class="neirong">
+		<#nested />
+    </div>
+</div>
+
+</body>
+</html>
+</#macro>

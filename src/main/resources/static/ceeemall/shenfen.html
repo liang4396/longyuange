@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="css/caozuojilu.css" >
+    <link type="text/css" rel="stylesheet" href="css/gonggong.css" >
+    <style>
+        .lghz,.csz,.lgs_con{height:210px;overflow-y: scroll;}
+        .lghz h6,.csz h6,.lgs_con h6{margin:0 0 0 0;}
+
+    </style>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script>
+        $(function(){
+            $('.con .btn').click(function(e) {
+                $(this).parent().toggleClass('current');
+                <!--$(this).next("ul").slideToggle();-->
+                $(this).parent().siblings().removeClass('current');
+            });
+
+            $('.lgs_con .lgs_btn').click(function(e) {
+                $(this).parent().toggleClass('lgs_current');
+                $(this).parent().siblings().removeClass('lgs_current')
+            });
+			
+			$('.con .wo').click(function(e) {
+                $(this).parent().toggleClass('dadong');
+				 $(this).parent().siblings().removeClass('dadong');
+                
+            });
+			
+			
+					
+			
+            $(".juzhong").css('min-height',$(window).height());
+        })
+    </script>
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="top_nav">
+        <div class="width_900">
+            <div class="zhuye"><a>设置主页</a>丨<a>加入收藏</a></div>
+            <div class="zhuce">
+                <div class="zc_dl"><a>登录</a></div>
+                <!-- <div class="zc_hd"><a>回到信锚网</a></div>
+                 <div class="zc_ht"><a>进入后台</a></div> -->
+            </div>
+        </div>
+    </div>
+    <div class="white">
+
+        <div class="dl_top">
+            <div class="logo">
+                <div><img src="images/logo2.gif" alt="" width="150" class="logo2"/></div>
+                <div>
+                    <img src="images/shuxian.png" alt="" class="shuxian"/>
+                </div>
+                <div class="pingtai">
+                    电力王者知识库输入系统
+                </div>
+            </div>
+            <!--<div class="name">-->
+            <!--<p><span class="blue">用户名：</span>xinmao01</p>-->
+            <!--<a href="#" class="font_14">回到【信锚网】</a>-->
+            <!--</div>-->
+        </div>
+    </div>
+    <div class="nav">
+			<ul>
+				<li class="top" ><a href="luru.html">录入题</a></li>
+				<li class="top" ><a href="../../templates/question.html">题库</a>
+					<!--<ul  class="down">
+						<li><a href="#" >待录入题库</a></li>
+						<li><a href="#" >全部题库</a></li>
+					</ul>-->
+				</li>
+				<li class="top" ><a href="../../templates/check.html">审核</a>
+					
+				</li>
+				<li class="top" style="background:#ffcd7e;"><a href="houtai.html">后台管理</a></li>
+			</ul>
+			
+			<div class="dl_btn">
+                <span></span>
+                <input type="text" class="text">
+                <input type="button" class="sousuo" value="搜索">
+            </div>
+    </div>
+
+
+    <div class="neirong">
+        <div class="con">
+            <ul>
+                <li class="bb current">
+                    <a href="#" class="btn">账号管理</a>
+                    <ul>
+                        <li ><a href="houtai.html">账号维护</a></li>
+						<li  class="yanse"><a href="shenfen.html">账号审核</a></li>
+                    </ul>
+                </li>
+				<li class="bb">
+                    <a href="#" class="btn">数据统计</a>
+                    <ul>
+                        <li ><a href="tongji.html">题目统计</a></li>
+						
+                    </ul>
+                </li>
+                
+            </ul>
+        </div>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">账号审核<!--<a href="tianjiacanshu.html"><input type="button" value="修改/新增参数"class="top_button"/></a>--></h1>
+				
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <table border="1" cellspacing="1" cellpadding="1" class="biaoge">
+                    <tbody><tr>
+                        <th class="br"><input type="checkbox" class="chbox cl1" checked="checked"></th>
+                        <th class="xh bl">序号</th>
+                        <th style="width:80px;">姓名</th>
+						<th>编号</th>
+						<th>操作</th>
+						<th>时间</th>
+                        <th class="cz">
+                            操作
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">1</td>
+                           <td>弟中弟</td>
+						   <td>0482</td>
+						  <td>修改权限-输入</td>
+						  <td>2019-07-24 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+					<tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">2</td>
+                           <td>董小弟</td>
+						   <td>04821</td>
+						  <td>修改密码</td>
+						  <td>2019-07-26 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+					<tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">2</td>
+                           <td>董小弟</td>
+						   <td>04821</td>
+						  <td>修改密码</td>
+						  <td>2019-07-26 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+					<tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">2</td>
+                           <td>董小弟</td>
+						   <td>04821</td>
+						  <td>修改密码</td>
+						  <td>2019-07-26 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+					<tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">2</td>
+                           <td>董小弟</td>
+						   <td>04821</td>
+						  <td>修改密码</td>
+						  <td>2019-07-26 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+					<tr>
+                        <td class="br"><input type="checkbox" class="chbox" checked="checked"></td>
+                        <td class="align bl">2</td>
+                           <td>董小弟</td>
+						   <td>04821</td>
+						  <td>修改密码</td>
+						  <td>2019-07-26 16:40</td>
+                        <td class="align"><a>驳回</a><span class="w_d10">丨</span><a>删除</a></td>
+                    </tr>
+
+
+
+
+                </tbody></table>
+				
+				
+				<div class="fenye" style="height:25px;">
+                    <ul>
+                        <li class="left-yuanjiao">«</li>
+                        <li>1</li>
+                        <li>2</li>
+                        <li>3</li>
+                        <li>4</li>
+                        <li>5</li>
+                        <li>...</li>
+
+                        <li>100</li>
+                        <li class="right-yuanjiao">»</li>
+                    </ul>
+                </div>
+                
+                <!--<div class="dl_w dl_em">
+                    <div class="dl_width600" style="width:500px;">
+                        <div class="dl_w_one"><em></em>参数枚举：</div>
+                        <div class="dl_w_two">
+                            系统带入
+                        </div>
+                    </div>
+                </div>-->
+
+
+
+            </div>
+			<div style="text-align: center;">
+                    <input type="button" class="two_button" value="批量通过"> 
+                </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+</div>
+</body>
+</html>

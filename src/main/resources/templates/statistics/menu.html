@@ -1,0 +1,314 @@
+<style>
+	.ui-dialog *{
+		font-size:15px
+	}
+<!--
+.btn-group-vertical>.btn-group:after, .btn-group-vertical>.btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .modal-header:after, .modal-header:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+    display: table;
+    content: " ";
+}
+:after, :before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1200px)
+.col-lg-7 {
+    width: 58.33333333%;
+}
+@media (min-width: 1200px)
+.col-lg-7{
+    float: left;
+}
+.col-lg-7 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.btn-success {
+        margin: 20px 0 0 0;
+    color: #fff;
+    background: #06c;
+    border: 0 none;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+}
+.glyphicon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+-->
+</style>
+<div class="con">
+	<ul>
+		<li class="bb ">
+			<a href="#" class="btn">账号管理</a>
+			<ul>
+				<li class="aa" id="userinfo"><a href="/statistics">账号维护</a></li>
+                <li class="aa" id="adduser"><a href="/statistics/adduser">添加人员</a></li>
+			</ul>
+		</li>
+		<li class="bb">
+			<a href="#" class="btn">数据统计</a>
+			<ul>
+				<li class="aa" id="questionStatis"><a href="/statistics/toQeustion">题目数量</a></li>
+				<!--<li class="aa" id="userInput"><a href="/statistics/toInput">输入统计</a></li>-->
+				<li class="aa" id="userCheck"><a href="/statistics/toCheck">审核统计</a></li>
+				<li class="aa" id="userError"><a href="/statistics/toError">错误统计</a></li>
+			</ul>
+		</li>
+		<li class="bb">
+			<a href="#" class="btn">榜单详情</a>
+			<ul>
+				<li class="aa" id="season1"><a href="/seasonScore/toSeasonScore?seasonId=one">第一周赛</a></li>
+				<li class="aa" id="season2"><a href="/seasonScore/toSeasonScore?seasonId=two">第二周赛</a></li>
+				<li class="aa" id="season3"><a href="/seasonScore/toSeasonScore?seasonId=three">第三周赛</a></li>
+				<li class="aa" id="finalSeaon"><a href="/seasonScore/toFinalSeasonScore">总决赛</a></li>
+			</ul>
+		</li>
+		<li class="bb" id="file"><a onclick="alertFile()">导入导出</a></li>
+		<div hidden id="menuUpload">
+			<div style="text-align:center" class="row fileupload-buttonbar">
+		        <button onclick="uploadFile()" class="btn btn-success fileinput-button" id="fileupload" class="col-lg-7">
+		            <i class="glyphicon glyphicon-plus"></i>
+		            <span>导入</span>
+		        </button>
+		        <button onclick="exportQues()" class="btn btn-success fileinput-button" class="col-lg-7">
+		            <i class="glyphicon glyphicon-plus"></i>
+		            <span>导出</span>
+		        </button>
+		    </div>
+		    <div class="bar" style="width: 0%;"></div>
+        </div>
+        
+        <div hidden style="padding-top: 20px;" id="upload">
+            <input id="upfile" type="file" name="file">
+        </div>
+
+        <!--导出使用树-->
+		<div hidden id="exportDiv">
+			<ul class="ztree" id="exportTree">
+			
+			</ul>
+		</div>
+		<form hidden id="exportExcelpanel" action="/export/question">
+		    <input name="categoryIds" id="categoryIds">
+		</form>
+	</ul>
+</div>
+<script>
+	$(function(){
+		
+	})
+	
+	function uploadFile() {
+            $("#upload").dialog({
+                title: "导入数据",
+                autoOpen: true,
+                modal: true,
+                width: "450px",
+                resizable: false,
+                open: function (event, ui) {
+                	// Height setter has no effect after init either
+                	$(this).dialog("option", "height", 200);
+                },
+                buttons: {
+                    "导入": function () {
+						let _this = $(this)
+                        var formData = new FormData();
+                        formData.append("file",$("#upfile")[0].files[0]);
+
+
+                        $.ajax({
+                            url: "/upload/uploadFile",
+                            type: "POST",
+                            data: formData,
+                            processData: false, // 将数据转换成对象，不对数据做处理，故 processData: false
+                            contentType: false,    // 不设置数据类型
+                            success: function (data) {
+                                if(data.code == 20000){
+                                	App.showMessage("succeed", data.message, function(){
+                                		_this.dialog("close")
+                                	})
+                                }else{
+                                	App.showMessage("error", data.message)
+                                }
+                            }
+                        });
+                        
+                    },
+                    "取消": function () {
+                    	$(this).dialog("close")
+                    }
+                }
+            })
+        }
+	
+	function alertFile(){
+		$("#menuUpload").dialog({
+            title: "导入导出",
+            autoOpen: true,
+            modal: true,
+            resizable: false
+        })
+	}
+	
+	/*导出目录方法*/
+    function exportQues() {
+        //加载树
+        queryExportTree();
+        $("#exportDiv").dialog({
+            title: "导出问题目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "导出": function () {
+                    /*拼接需要导出的目录id 字符串*/
+                    var array = "";
+                    var zTree = $.fn.zTree.getZTreeObj("exportTree");
+                    var node = zTree.getCheckedNodes(true);
+                    if (node) {
+                        for (var j in node) {
+                            if (node[j].id && node[j].id != 0) {
+                                array += node[j].id + ",";
+                            }
+                        }
+                        if (array != null && array != "") {
+                            array = array.substr(0, array.length - 1);
+                            $("#categoryIds").val(array);
+                        } else {
+							App.showMessage("error", "请选择需要导出的目录！", function(){
+							})
+                            return false;
+                        }
+                    }
+                    $("#exportDiv").dialog("close");
+                    document.getElementById("exportExcelpanel").submit();
+                },
+                "取消": function () {
+                    $("#exportDiv").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#exportDiv").dialog("destroy");
+            }
+        });
+    }
+	
+	//查询目录信息方法
+    function queryExportTree(exportTreeSetting) {
+    	/* 移动分类类目配置信息 */
+        var exportTreeSetting = {
+            check: {
+                enable: true,
+                nocheckInherit: false,
+                autoCheckTrigger: true,
+                chkboxType: {
+                    "Y": "s",
+                    "N": "s"
+                }
+            },
+            edit: {
+                enable: false
+            },
+            view: {
+                selectedMulti: true,
+                dblClickExpand: false,
+                showIcon: false,
+                showLine: true,
+                showTitle: true,
+                fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pid",
+                    rootPId: ""
+                }
+            },
+            callback: {
+                beforeClick: function (treeId, treeNode) {
+                    $("#categoryId").val(treeNode.id);
+                    return true;
+                }
+            }
+        };
+    	
+        $.ajax({
+            "type": "post",
+            "url": "/category/ztree",
+            "dataType": "json",
+            "success": function (data) {
+                zNodes = data;
+                var t = $("#exportTree");
+                t = $.fn.zTree.init(t, exportTreeSetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("exportTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+
+            }
+        });
+
+    }
+	
+	function openAdminMenu(id){
+
+		if($("#" + id).parents(".bb").length != 0){
+			$("#" + id).parents(".bb").addClass("current");
+		}
+		
+		if($("#" + id).parents(".aa").length != 0){
+			$("#" + id).parents(".aa").addClass("dadong");
+			$("#" + id).addClass("yanse");
+		}else{
+			$("#" + id).addClass("yanse");
+		}
+
+	}
+</script>

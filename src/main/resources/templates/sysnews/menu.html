@@ -1,0 +1,50 @@
+<div class="con">
+	<ul>
+		<li class="bb ">
+			<a href="#" class="btn">系统消息</a>
+			<ul>
+				<li class="aa" id="announcement"><a href="/sysnewsView/announcement">系统公告</a></li>
+                <li class="aa" id="group"><a href="/sysnewsView/group">群发消息</a></li>
+                <li class="aa" id="sysnews"><a href="/sysnewsView">消息管理</a></li>
+			</ul>
+		</li>
+		<li class="bb ">
+			<a href="#" class="btn">系统客服</a>
+			<ul>
+				<li class="aa" id="appeal"><a href="/sysnewsView/appeal">申诉处理</a></li>
+                <li class="aa" id="appealList"><a href="/sysnewsView/appealList">申诉管理</a></li>
+                <li class="aa" id="userInofs"><a href="/wxInfo/toUserInfos">选手信息</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<script>
+	$.ajaxSetup({
+		beforeSend:function(){
+			$(".juzhong").mLoading({
+	            text:""
+	        });
+		},
+		complete:function(){
+			$(".juzhong").mLoading("hide");
+		},
+		error:function(){
+			App.showMessage("error", "系统异常");
+		}
+	})
+
+	function openAdminMenu(id){
+
+		if($("#" + id).parents(".bb").length != 0){
+			$("#" + id).parents(".bb").addClass("current");
+		}
+		
+		if($("#" + id).parents(".aa").length != 0){
+			$("#" + id).parents(".aa").addClass("dadong");
+			$("#" + id).addClass("yanse");
+		}else{
+			$("#" + id).addClass("yanse");
+		}
+
+	}
+</script>

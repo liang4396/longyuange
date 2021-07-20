@@ -1,0 +1,209 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<#include "menu.html"/>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">信息维护</h1>
+                <div class="dl_blue"></div>
+            </div>
+            <div class="con_right_bottom padding_0">
+              <form id="update">
+                <div class="dl_h">
+                    <div class="user_canshu">
+                        <div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em></em>姓名：</div>
+								<div class="dl_w_two" id="realname"></div>
+                            </div>
+                            
+                        </div>
+						<div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em></em>昵称：</div>
+                                <div class="dl_w_two"><input name="username"  id="username" class="dl_text120" style="width:200px;" type="text"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em>*</em>手机号码：</div>
+                                <div class="dl_w_two"><input name="phoneNum" id="phoneNum" class="dl_text120" style="width:200px;" type="text"></div>
+								<input type="button" class="code two_button" value="发送验证码" style="padding: 7px;margin:0px 0px 0px 5px;font-size: 12px;;" />
+                            </div>
+                        </div>
+
+
+                        <div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em>*</em>验证码：</div>
+                                <div class="dl_w_two"><input disabled name="smsCode" class="dl_text120" style="width:200px;" type="text"></div>
+                            </div>
+                        </div>
+
+                        <div class="dl_w">
+                            <div class="dl_width500">
+                                <div class="dl_w_one w_80"><em></em>权限列表：</div>
+                                <div class="dl_w_two" id="roleName"></div>
+                            </div>
+                        </div>
+
+                        <div class="p_center">
+                            <a ><input type="button" value="提交" class="submit two_button"></a>
+                            <a href="/user/info"><input type="button" value="返回" class="two_button hgb"></a>
+                        </div>
+                    </div>
+                </div>
+              </form>
+            </div>
+        </div>
+    <script>
+    	var phoneNum;
+    	$(function(){
+    		$(document).attr("title","修改信息");
+    		var timer="";
+            var nums=60;
+            var validCode=true;
+
+            jQuery.validator.addMethod("phone", function(value, element) {
+                var length = value.length;
+                var mobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+                return this.optional(element) || (length == 11 && mobile.test(value));
+            }, "请填写正确的手机号码");//可以自定义默认提示信息
+
+    		openMenu("grgl");
+    		openUserMenu("user");
+    		$.ajax({
+            	type:"get",
+            	url:"/user/currect",
+            	data:{},
+            	success:function(result){
+            		let obj = result.data
+            		$(".dl_w_two").each(function(index, item){
+            			let id = item.id
+            			$(item).html(obj[id]);
+            		})
+            		$(".dl_text120").each(function(index, item){
+            			let id = item.id
+            			$(item).val(obj[id]);
+            		})
+            		phoneNum = obj["phoneNum"]
+            	},
+            	error:function(e){
+            		
+            	}
+            })
+
+            $("#update").validate({
+                rules: {
+                	phoneNum: {
+                		required:true,
+                		phone:true,
+                		remote:{
+                			type:"post",
+                			url:"/user/checkMyPhone",
+                			data:{
+                				phoneNum: function(){
+                					return $("[name='phoneNum']").val()
+                				}
+                			}
+                		}
+                	},
+                	smsCode: {
+                		required:true,
+                		remote:{
+                			type:"post",
+                			url:"/user/checkSmscode",
+                			data:{
+                				smscode: function(){
+                					return $("[name='smsCode']").val()
+                				},
+                				key: function(){
+                					return $("[name='phoneNum']").val()
+                				},
+                			}
+                		}
+                	}
+                },
+                messages: {
+                	phoneNum: {required: "必填",remote:"该手机号码已注册"},
+                	smsCode: {
+                		required: "必填",
+                		remote: "验证码错误"
+                	}
+                }
+            })
+            
+            $("#phoneNum").on("change", function(){
+            	if($(this).val() != phoneNum){
+            		$("[name='smsCode']").prop("disabled", false);
+            	} else {
+            		$("[name='smsCode']").prop("disabled", true);
+            	}
+            })
+            
+            $(".code").on('click',function(){
+            	var code=$(this);
+                //发请求给后端发送验证码
+                var phoneNum =$('#phoneNum').val();
+                $.ajax({
+                    url: "/user/sendCode",
+                    type: "POST",
+                    data: {
+                        phoneNum: phoneNum
+                    },
+                    datatype:  "json",
+                    success: function (data) {
+                        if (data.code == 20000){
+                        	App.showMessage("succeed", "短信发送成功")
+                            timer=setInterval(function(){
+                                if(nums>0){
+                                    nums--;
+                                    code.val(nums+"秒后重新发送");
+                                    code.attr('disabled','disabled')
+                                }
+                                else{
+                                    clearInterval(timer);
+                                    nums=60;
+                                    validCode=true;
+                                    code.removeClass("gray-bg");
+                                    code.val("发送验证码");
+                                    code.attr('disabled',true)
+                                }
+                            },1000)
+                        }else{
+                        	App.showMessage("error","发送失败,请重新发送")
+                        }
+                    }
+                })
+            })
+            
+            $(".submit").on("click",function(){
+            	if($("#update").valid()){
+            		update();
+            	}
+            })
+    	})
+    	
+    	function update(){
+    		var user = $('#update').serialize();
+    		$.ajax({
+            	type:"put",
+            	url:"/user/update",
+            	data:user,
+            	success:function(result){
+            		if(result.code == "20000"){
+            			App.showMessage("succeed", result.message, function(){
+            				window.location = "/user/info"
+            			})
+                	} else {
+                		App.showMessage("error", result.message)
+                	}
+            	},
+            	error:function(e){
+            		App.showMessage("error", "更新失败")
+            	}
+            })
+    	}
+    </script>
+</@layout>

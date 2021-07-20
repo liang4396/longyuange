@@ -1,0 +1,26 @@
+<#include "../../layout/layout.html">
+
+<@layout>
+	<#include "../menu.html"/>
+	<link type="text/css" rel="stylesheet" href="/static/ceeemall/css/caozuojilu.css">
+    <div class="con_right">
+        <div class="con_right_top">
+            <h1 class="dl_h1">修订题目</h1>
+            <div class="dl_blue"></div>
+        </div>
+        <div class="con_right_bottom padding_0">
+            <div class="dl_h">
+                <div class="user_canshu">
+                    <table style="width:99%" id="findTable"  border="1" cellspacing="1" cellpadding="1" class="biaoge">
+                	</table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    	$(function(){
+    		openMenu("grgl");
+    		openUserMenu("findupdate");
+    	})
+    </script>
+</@layout>

@@ -1,0 +1,75 @@
+@CHARSET "UTF-8";
+.ztree li ul li a.curSelectedNode{
+	color:#0066cc!important;
+	background-color:transparent!important;
+}
+.vip_accountmenu ul li {
+	padding:0px;
+	display: block;
+	list-style: none;
+	overflow: visible;
+}
+.vip_accountmenu ul li ul {
+	padding:0px;
+}
+.vip_accountmenu ul li a {
+	display: block;
+	height: 34px;
+	color: #002fa7;
+	margin-top: 0px;
+	padding-top: 10px;
+	padding-left: 20px;
+	margin-left:20px;
+	font-size: 14px;
+	font-weight:bold;
+	outline: none;
+	background:url("images/icon_sm/vip_icon2.png") center left no-repeat;
+}
+.vip_accountmenu .ztree li span.button {
+	display: none;
+}
+.vip_accountmenu .dafault_Twobg{
+	background:url("images/icon_sm/vip_icon3.png") center left no-repeat;
+}
+.vip_accountmenu .dafault_Threebg{
+	background:url("images/icon_sm/vip_icon3.png") center left no-repeat;
+	font-weight:normal!important;
+	font-size:12px;
+	color:#505050;
+	margin-left:60px;
+	padding-left:20px;
+}
+
+.vip_accountmenu ul li ul li ul {
+	margin-bottom: 5px;
+}
+.vip_accountmenu>ul>li>ul>li {
+	display: block;
+	font-size: 12px;
+	list-style: circle;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+.vip_accountmenu>ul>li>ul>li>a{
+	font-size: 12px;
+	color: #505050;
+	font-weight:bold;
+	padding-left: 20px;
+	margin-left:35px;
+	background:url("images/icon_sm/vip_icon3.png") center left no-repeat;
+}
+.vip_accountmenu>ul>li>ul>li>ul>li>a{
+	font-weight:normal!important;
+	font-size:12px;
+	color:#505050;
+	margin-left:60px;
+	padding-left:20px;
+	background:url("images/icon_sm/vip_icon3.png") center left no-repeat;
+}
+.vip_accountmenu .ztree li a.curSelectedNode{
+	padding-top:9px;
+	height:34px;
+	width: 71px;
+}

@@ -1,0 +1,85 @@
+<#include "../layout/layout.html">
+<@layout>
+<#include "menu.html"/>
+	<style>
+		.dl_width158 {
+			width: 300px;
+			height: 30px;
+			float: left;
+		}
+		
+		.dl_w_two {
+			width: 200px
+		}
+	</style>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">群发消息<!--<a href="tianjiayonghu.html"><input  style="padding:6px 10px;"type="button" value="添加账户"class="top_button"/></a>--></h1>
+                <div class="dl_blue"></div>
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    <div class="user_canshu">
+                        <div style="height: 100px;" class="dl_w">
+                        	<form id="newsForm">
+                            <div style="width: 100%;" class="dl_width300">
+                                <div style="width: 100%;" class="dl_w_two" id="realname">
+                                	<textarea style="width: 100%;font-size:16px;padding:5px;height:100px;resize:none" id="content" name="content"></textarea>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                        <div class="view p_center">
+                            <input id="submit" type="button" value="发布" class="two_button">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+<script>
+	$(function(){
+		$(document).attr("title","账号维护");
+	    openMenu("xtkf");//导航栏回显
+	    openAdminMenu("group");/*目录添加颜色*/
+	    
+	    $("#newsForm").validate({
+			rules: {
+				content:{
+					required: true,
+					maxlength:100
+				}
+			},
+			messages:{
+				content:{
+					required: "必填",
+					maxlength:"请输入内容不超过100个字的公告"
+				}
+			}
+		})
+	    
+	    $("#submit").on("click", function(){
+	    	if($("#newsForm").valid()){
+	    		$.ajax({
+		    		type:"post",
+		    		url:"/sysnews/send",
+		    		data:{
+		    			type: 2,
+		    			sendContent: $("#content").val()
+		    		},
+		    		success:function(data){
+		    			if (data.code == 20000) {
+                            App.showMessage("succeed", data.message, function(){
+                            	$("#content").val("");
+                            })
+                        } else {
+                            App.showMessage("error", data.message)
+                        }
+		    		}
+		    	})	
+	    	}
+	    })
+	})
+</script>
+</@layout>

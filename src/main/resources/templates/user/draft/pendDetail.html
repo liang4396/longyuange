@@ -1,0 +1,538 @@
+<#include "../../layout/layout.html">
+
+<@layout>
+    <style>
+        .lghz,.csz,.lgs_con{height:210px;overflow-y: scroll;}
+        .lghz h6,.csz h6,.lgs_con h6{margin:0 0 0 0;}
+ 		.dl_w_two{
+			font-size:14px
+		}
+		
+		.dl_w_one{
+			font-size:14px
+		}
+		.error {
+		    display: block;
+		}
+    </style>
+	<#include "../menu.html"/>
+        <!-- <div class="con" >
+            <ul class="ztree" id="categoryTree">
+
+            </ul>
+        </div> -->
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1" id="categoryName">  </h1>
+                <div class="dl_blue"></div>
+            </div>
+
+            <div class="con_right_bottom padding_0">
+            	<form id="pending">
+                <div class="dl_w">
+                    <div class="dl_width200" style="width:800px;">
+                        <div class="dl_w_one"><em>*</em>问题：</div>
+                        <div class="dl_w_two">
+                        	<input id="quesDraftBody" name="questionDraftBody" type="text" class="dl_text120" style="width:730px;"/>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em>*</em>难度：</div>
+                        <div class="dl_w_two">
+                        	<select id="diff" name="diff" class="dl_select60">
+	                            <option value=2>初级</option>
+	                            <option value=1>中级</option>
+	                            <option value=0>高级</option>
+                        	</select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em>*</em>A：</div>
+                        <div class="dl_w_two">
+							<input id="a" name="a" class="dl_text120" style="width:200px;" type="text">
+						</div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em>*</em>B：</div>
+                        <div class="dl_w_two">
+                        	<input id="b" name="b" class="dl_text120" style="width:200px;" type="text">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em>*</em>C：</div>
+                        <div class="dl_w_two">
+                        	<input id="c" name="c" class="dl_text120" style="width:200px;" type="text">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width300" >
+                        <div class="dl_w_one"><em>*</em>D：</div>
+                        <div class="dl_w_two">
+                        	<input id="d" name="d" class="dl_text120" style="width:200px;" type="text">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="dl_w">
+                    <div class="dl_width160">
+                        <div class="dl_w_one"><em>*</em>正确答案：</div>
+                        <div class="dl_w_two" >
+                        	<select id="rightAns" name="rightAns" class="dl_select60">
+								<option value="A">A</option>
+								<option value="B">B</option>
+								<option value="C">C</option>
+								<option value="D">D</option>
+							</select>
+                        </div>
+                    </div>
+
+                </div>
+			</form>
+
+
+
+
+
+
+            </div>
+
+            <div style="text-align: center;">
+
+                <input type="button" class="two_button" id="tuihui" value="退回">
+                <input type="button" class="two_button cgb" id="moveQues" value="移动">
+                <input type="button" class="two_button cgb" id="ruku"   value="入库">
+                <input type="button" class="two_button cgb" id="deleteById" value="删除">
+                <input type="button"  class="two_button cgb" onclick="javascript:history.back(-1);" value="返回" >
+
+            </div>
+
+        </div>
+
+
+
+    <div hidden id="moveDiv">
+    <ul class="ztree" id="moveTree">
+
+    </ul>
+	</div>
+	<input type="hidden" id="categoryId" name="categoryId"  value="">
+	<script>
+
+    $(function () {
+    	openMenu("grgl");
+		openUserMenu("pending");
+		$(document).attr("title","我的任务-待定区");
+    	$("#pending").validate({
+    		rules: {
+    			questionDraftBody:{
+    				required: true,
+    				maxlength:50
+    			},
+    			a:{
+    				required: true,
+    				maxlength:10
+    			},
+    			b:{
+    				required: true,
+    				maxlength:10
+    			},
+    			c:{
+    				required: true,
+    				maxlength:10
+    			},
+    			d:{
+    				required: true,
+    				maxlength:10
+    			}
+    		},
+    		messages:{
+    			questionDraftBody:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过50个字的问题"
+    			},
+    			a:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			b:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			c:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			},
+    			d:{
+    				required: "必填",
+    				maxlength:"请输入内容不超过10个字的答案"
+    			}
+    		}
+    	})
+    	
+        // queryCategoryTree(categorySetting);/*获取目录树*/
+        loadQuestion();/*加载题目信息*/
+    });
+
+    var questionDraft={};
+    var questionDraftId=getUrlParam("id");
+
+    //审核退回
+    $("#tuihui").click(function () {
+    	App.showConfirm("question","确定退回该问题？", function(){
+    		//审核未通过
+            var oprate = 1;
+            $.ajax({
+                url: "/questiondraft/check/"+questionDraftId+"/"+oprate,
+                type: "get",
+                data: questionDraft,
+                success: function (data) {
+                	if (data.code == 20000) {
+   	                    //提交成功,提示成功信息
+   	                    App.showMessage("succeed", data.message, function(){
+   	                        history.go( - 1)
+   	                    })
+   	                } else {
+   	                	//提交成功,提示成功信息
+	                    App.showMessage("error", data.message)
+   	                }
+                }
+            })
+    	})
+    });
+
+    /*展示题目上方目录信息*/
+    function showCategoryName(categoryId) {
+        $.ajax({
+            type: "post",
+            url: "/category/findNamePathById",
+            data: {"categoryId": categoryId},
+            dataType: "json",
+            success: function (data) {
+                if(data.flag){
+                    $("#categoryName").html(data.data);
+                }
+            }
+        });
+    }
+    
+    //数据回显
+    function loadQuestion(){
+        var id=getUrlParam("id");
+        var oprate = getUrlParam("oprate");
+
+        $.ajax({
+            url: "/questiondraft/findOne/"+id+"/"+oprate,
+            type: "GET",
+            success: function (data) {
+                console.log(data.message)
+                questionDraft = data.data;
+                if (oprate == 1){
+                    $('#quesDraftBody').val(data.data.questionDraftBody);
+                    $('#categoryId').val(data.data.categoryId);
+                }else {
+                    $('#quesDraftBody').val(data.data.questionBody);
+                    $('#categoryId').val(data.data.categoryId);
+                }
+
+                $('#diff option[value="'+ data.data.difficulty +'"]').prop("selected", true);
+                $('#a').val(data.data.a);
+                $('#b').val(data.data.b);
+                $('#c').val(data.data.c);
+                $('#d').val(data.data.d);
+                $('#rightAns option[value="'+ data.data.rightanswer +'"]').prop("selected", true);
+            	// openTree()
+                showCategoryName(data.data.categoryId)
+            }
+        })
+    }
+
+
+    /*移动目录*/
+    $("#moveQues").click(function () {
+        //加载树
+        var categoryId = questionDraft.categoryId;
+        queryMoveTree(moveTreeSetting, categoryId);
+        var oprate = 1;/*0：表示正式表数据 1 表示移动草稿表数据*/
+        $("#moveDiv").dialog({
+            title: "问题移动目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "移动": function () {
+                	var categoryId = $('#categoryId').val();
+                    if(categoryId){
+	                    $.ajax({
+	                        url: "/questiondraft/move/" + questionDraftId + "/" + categoryId + "/" + oprate,
+	                        type: "Put",
+	                        success: function (data) {
+	                        	if (data.code == 20000) {
+	           	                    //提交成功,提示成功信息
+	           	                    App.showMessage("succeed", data.message, function(){
+	           	                    	$("#moveDiv").dialog("close");
+	           	                    	history.go(-1)
+	           	                    })
+	           	                } else {
+	           	                	//提交成功,提示成功信息
+	        	                    App.showMessage("error", data.message)
+	           	                }
+	                        }
+	                    });
+                    } else {
+                    	App.showMessage("warning", "请选择移动目录")
+                    }
+                },
+                "取消": function () {
+                    $("#moveDiv").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#moveDiv").dialog("destroy");
+            }
+        });
+    });
+
+    $("#deleteById").click(function () {
+    	App.showConfirm("question","确定要删除该数据吗？", function(){
+    		$.ajax({
+    	        url: "/questiondraft/delete/"+questionDraftId,
+    	        type: "delete",
+    	        success: function (data) {
+    	            if (data.code == 20000) {
+   	                    //提交成功,提示成功信息
+   	                    App.showMessage("succeed", data.message, function(){
+   	                        history.go( - 1)
+   	                    })
+   	                } else {
+   	                	//提交成功,提示成功信息
+	                    App.showMessage("error", data.message)
+   	                }
+    	        }
+    	    });
+    	});
+   })
+
+
+    $("#ruku").click(function () {
+    	if($("#pending").valid()){
+    		//oprate =2 代表审核通过 进行入库操作
+            var oprate =2;
+            App.showConfirm("question","确定通过该数据吗？", function(){
+    	   		questionDraft.questionDraftBody = $("#quesDraftBody").val()
+    		    questionDraft.difficulty = $("#diff").val()
+    		    questionDraft.a = $("#a").val()
+    		    questionDraft.b = $("#b").val()
+    		    questionDraft.c = $("#c").val()
+    		    questionDraft.d = $("#d").val()
+    		    questionDraft.rightanswer = $("#rightAns").val()
+    		    $.ajax({
+    		        url: "/questiondraft/check/"+questionDraftId+"/"+oprate,
+    		                type: "get",
+    		                data: questionDraft,
+    		                success: function (data) {
+    		                	if (data.code == 20000) {
+    		   	                    //提交成功,提示成功信息
+    		   	                    App.showMessage("succeed", data.message, function(){
+    		   	                        history.go( - 1)
+    		   	                    })
+    		   	                } else {
+    		   	                	//提交成功,提示成功信息
+    			                    App.showMessage("error", data.message)
+    		   	                }
+    		                }
+    		        });
+    	   	});	
+    	}
+   })
+
+    //查询目录信息方法
+    function queryMoveTree(moveTreeSetting, categoryId) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/findParentId",
+            "data": {"categoryId": categoryId},
+            "dataType": "json",
+            "success": function (dataParenId) {
+
+                $.ajax({
+                    "type": "post",
+                    "url": "/category/ztree",
+                    "dataType": "json",
+                    "success": function (data) {
+                        zNodes = data;
+                        var t = $("#moveTree");
+                        t = $.fn.zTree.init(t, moveTreeSetting, zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("moveTree");
+                        var rootNode = zTree.getNodeByParam("id", 0);
+                        zTree.expandNode(rootNode, true, false);
+                        zTree.setting.edit.drag.isCopy = false;
+                        zTree.setting.edit.drag.isMove = true;
+                        zTree.setting.edit.drag.prev = true;
+                        zTree.setting.edit.drag.inner = true;
+                        zTree.setting.edit.drag.next = true;
+                        if(dataParenId != null){
+                            zTree.expandNode(zTree.getNodeByParam("id",dataParenId, null));//展开指定节点
+                            zTree.selectNode(zTree.getNodeByParam("id",categoryId,null));//选中指定节点
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /* 移动分类类目配置信息 */
+    var moveTreeSetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '15px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function (treeId, treeNode) {
+            	$("#categoryId").val("");
+            	if(!treeNode.isParent){
+                    $("#categoryId").val(treeNode.id);
+            	}
+                return true;
+            }
+        }
+    };
+
+
+
+
+    /*展开题目目录*/
+    function openTree() {
+        var categoryId = $("#categoryId").val();
+        var data = {
+            "categoryId":categoryId
+    	};
+        
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/findParentId",
+            "dataType" : "json",
+            "data":data,
+            "success" : function(data) {
+                if(data!=null){
+                    var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                    zTree.expandNode(zTree.getNodeByParam("id",data,null));//展开指定节点
+                    zTree.selectNode(zTree.getNodeByParam("id",categoryId,null));//选中指定节点
+                }
+            }
+        });
+    }
+
+
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/ztree",
+            "dataType" : "json",
+            async:false,
+            "success" : function(data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+    var categorySetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            selectedMulti : true,
+            dblClickExpand : false,
+            showIcon:false,
+            showLine : true,
+            showTitle:true,
+            fontCss: { 'font-size': '15px;','color':'#0066c'}//统一设置样式
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+                     beforeClick : function(treeId, treeNode) {
+                          var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                          $("#categoryName").html(treeNode.name);
+                          return true;
+                      }
+        }
+    };
+
+    /*获取url中的值*/
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  // 匹配目标参数
+        if (r != null) return unescape(r[2]); return null; // 返回参数值
+    }
+
+	</script>
+</@layout>

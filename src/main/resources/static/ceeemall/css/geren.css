@@ -1,0 +1,25 @@
+.con_right_top{position: relative;}
+.lg_con{height: auto;float: left;}
+.user{border:1px solid #999;margin:20px 0 0 0; height:260px; overflow-y: scroll;width:170px;
+    overflow-x: hidden;}
+.user a{font-size: 16px;}
+.user h6{margin:-15px 0 0 20px;width:50px; height: 25px;background: #fff;text-align: center;}
+.user_con{width:160px; padding:5px;}
+.user_con ul li ul li{}
+.user_con a{color:#333;padding-left:20px;}
+.user_con .user_btn{background:url(../images/icon1.png) no-repeat center left;}
+.user_con ul li ul{display:none;}
+.user_con ul li ul li a{margin:0 0 0 10px;font-size:14px;background: url("../images/icon2.png")no-repeat;}
+.user_con ul li{width:160px;}
+
+.user_con ul li.user_current ul{display:block;}
+
+.addcanshu{float: left;padding:2px 5px; color:#fff; background:#06c;border:0 none;margin:80px 0 0 90px;}
+.user_canshu{height:auto;}
+
+.dl_w_one em{color:red;margin:0 5px;}
+.dl_em{padding:0;}
+
+
+.add_button{position: absolute;top:1px; right: 1px;}
+.dl_w .w_80{width:100px;}

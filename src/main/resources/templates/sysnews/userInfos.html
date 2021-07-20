@@ -1,0 +1,152 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<#include "menu.html"/>
+
+<div class="qiehuan" style="width:600px;" >
+    <button class="cateinput" onclick="tabSeason('one',this)" style="background:rgb(255, 205, 126);">第一周赛</button>
+    <button class="cateinput" onclick="tabSeason('two',this)">第二周赛</button>
+    <button class="cateinput" onclick="tabSeason('three',this)">第三周赛</button>
+    <button class="cateinput"onclick="tabSeason('final',this)">总决赛</button>
+</div>
+
+<div style="padding:20px 10px" class="con_right">
+    <div class="con_right_top">
+        <h1 class="dl_h1" >选手获奖信息
+        </h1>
+        <div class="dl_blue"></div>
+    </div>
+    <div class="con_right_bottom padding_0">
+        <table style="width:99%" border="1" id="myTable" cellspacing="1" cellpadding="1" class="biaoge">
+        </table>
+    </div>
+    <div style="text-align: center;">
+        <input type="button" class="two_button" onclick="allExport()" value="批量导出">
+    </div>
+</div>
+
+<!--导出使用选择哪个栏目-->
+<form hidden id="exportExcelpane" action="/wxInfo/exportUserInfos">
+    <input hidden id="seasonTab" name="seasonTab" value="one">
+</form>
+
+<script>
+
+    /*进入页面默认加载目录树 和问题列表*/
+    $(function () {
+        $(document).attr("title","选手信息");
+        openMenu("xtkf");//导航栏回显
+        openAdminMenu("userInofs");/*目录添加颜色*/
+        loadList();
+    })
+
+
+    var tableList;
+    /*加载列表数据*/
+    function loadList() {
+
+        var aoData = {
+            seasonTo:function () {
+                return $("#seasonTab").val();
+            }
+        }
+
+        tableList = $('#myTable').DataTable({
+            "bLengthChange": false,   // 是否改变每页显示行数
+            'iDisplayLength': 15, //每页初始显示5条记录
+            "searching": false,      // 是否显示搜索框
+            "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+            "serverSide": true,       // true表示使用后台分页
+            sPaginationType: "first_last_numbers",  // 显示首页和末页
+            "bInfo" : false,
+            "ajax": {
+                "url": "/wxInfo/page",  // 异步传输的后端接口url
+                "type": "POST",      // 请求方式
+                "data": aoData
+            },
+            "columns": [
+                {
+                    title: "序号",
+                    width: "60px",
+                    "class":"align",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                }, // 序号
+                {
+                    title: "微信名",
+                    "class":"tdpd",
+                    width: "140px",
+                    data: function (data) {
+                        return "<div style='line-height: 20px;width:130px' title=\"" + data.nickName + "\"><a style='color:blue' >" + data.nickName + "</a></div>"
+                    }
+                }, // 序号
+                {
+                    title: "排名",
+                    "class":"tdpd",
+                    width: "50px",
+                    data: function (data) {
+                        return "<div  title=\"" + data.seasonRank + "\"><a style='color:black'>" + data.seasonRank + "</a></div>"
+                    }
+                },
+                {
+                    title: "姓名",
+                    "class":"tdpd",
+                    width: "160px",
+                    data: function (data) {
+                    	if(data.relaName){
+                    		return "<div style='line-height: 20px;width:150px' title=\"" + data.relaName + "\"><a style='color:black'>" + data.relaName + "</a></div>"
+                    	} else {
+                    		return "<div style='line-height: 20px;width:150px' title='暂无'><a style='color:black'>暂无 </a></div>"
+                    	}
+                    }
+                }, // 序号
+                {
+                    title: "电话",
+                    "class":"tdpd",
+                    width: "100px",
+                    data: function (data) {
+                        return "<div  title=\"" + data.phoneNum + "\"><a style='color:black'>" + data.phoneNum + "</a></div>"
+                    }
+                }, // 序号
+                {
+                    title: "地址",
+                    "class":"tdpd",
+                    data: function (data) {
+                        return "<div style='line-height: 20px;' title=\"" + data.address + "\"><a style='color:black'>" + data.address + "</a></div>"
+                    }
+                }
+            ]
+        });
+
+        $(tableList.column(0).header()).css("padding", "0px")
+        $(tableList.column(1).header()).css("padding", "0px")
+        $(tableList.column(2).header()).css("padding", "0px")
+        $(tableList.column(3).header()).css("padding", "0px")
+        $(tableList.column(4).header()).css("padding", "0px")
+        $(tableList.column(5).header()).css("padding", "0px")
+    };
+
+    //切换tab页 重新加载数据方法
+    function tabSeason(seaeson,data) {
+        $(data).css("background","rgb(255, 205, 126)")
+        $(data).siblings().css("background","#0066cc")
+
+        $("#seasonTab").val(seaeson);
+        /*刷新题目数据*/
+        tableList.ajax.reload()
+
+    }
+
+    function  allExport(){
+        App.showConfirm("question", "确定导出选手获奖信息数据？", function(){
+            document.getElementById("exportExcelpane").submit();
+        })
+
+    }
+</script>
+</@layout>

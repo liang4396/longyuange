@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/xiangqing.css" >
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/gonggong.css" >
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/static/js/datatables.zh.js"></script>
+    <script type="text/javascript" src="/static/js/common/app.js"></script>
+    <script type="text/javascript" src="/static/js/common/artDialogPlugin.js"></script>
+    <script type="text/javascript" src="/static/js/artDialogPlugin.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.ui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.ztree.all-3.5.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.mloading.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/ceeemall/css/geren.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/static/css/zTreeStyle.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery-ui.min.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/dialog/blue.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery.mloading.css">
+    <style>
+        .lghz,.csz,.lgs_con{height:210px;overflow-y: scroll;}
+        .lghz h6,.csz h6,.lgs_con h6{margin:0 0 0 0;}
+        .dl_width160{width:500px;}
+        .dl_width300{width:500px;}
+        .dl_w_two{width:300px;}
+        .error {
+            display: block;
+            color: red;
+            margin: 10px auto 0px;
+            font-size:14px;
+            width: 500px;
+        }
+        .ui-dialog-titlebar{
+            display: none;
+        }
+        .ui-widget-content{
+            background: transparent!important;
+            border: 0px solid #c5c5c5!important;
+        }
+        footer{
+	border-top:1px solid #EBEBEB;
+	margin:30px auto;
+	padding-bottom:20px;
+	margin-bottom:0;
+}
+#guild ul{ list-style:none; padding:0; margin:0;}
+#guild ul li{ display:block; float:left; height:20px; line-height:20px;}
+#guild ul li.guild_img{ width:10px; text-align:center;}
+#guild ul li a{ width:70px; font-size:12px; display:block; color:#717171; float:left; font-family:'瀹嬩綋'; text-align:center;}
+#guild ul li a.guild_li_1{ text-align:left; width:60px;}
+#guild p{line-height:22px;}
+#guild p span,#guild p label{ font-weight:normal;  font-size:12px; font-family:'瀹嬩綋'; color:#717171;display:block;text-align:center; margin-right:30px;}
+#guild p span.black_font{ color:#3f3f3f;}
+#guild p label.black_font{ color:#3f3f3f;}
+#guild p label{ display:block;}
+.modal-footer{
+	width:100%;
+	margin:0 auto; 
+	text-align:left;
+	padding:0;
+    background:#8dc0cd!important;
+}
+.modal-footer > p > a{
+	color:#3f3f3f;
+	margin-right:20px;
+}
+    </style>
+
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="tu">
+        <div class="con">
+            <text style="font-size:14px;margin-left: 148px;display: block;height: 30px; ">请注意：题干限制在50字以内，答案限制在10字以内，均包含标点符号。</text>
+            <form  id="question">
+            <textarea id="quesBody" placeholder="请填写题干" name="questionDraftBody" style="font-size: 20px;" class="t"></textarea>
+            <button class="xiangsi" type="button" id="findLike">查相似</button>
+
+
+
+                <div >
+                    <input id="a" name="a" placeholder="请填写正确答案" style="font-size: 20px;" type="text" class="ti dui" />
+
+                </div>
+                <div>
+                    <input id="b" name="b" placeholder="请填写错误答案" style="font-size: 20px;" type="text" class="ti cuo" />
+                </div>
+                <div>
+                    <input id="c" name="c" placeholder="请填写错误答案" style="font-size: 20px;" type="text" class="ti cuo" />
+                </div>
+                <div>
+                    <input id="d" name="d" placeholder="请填写错误答案" style="font-size: 20px;" type="text" class="ti cuo" />
+                </div>
+            <input  hidden name="categoryId" id="categoryId" value="" />
+                <input  hidden name="openId" id="openId" value="" />
+            </form>
+
+            <div class="u">
+                <li >
+                    <div class="xuanze" id="cate1" data-value="1">电力发展</div>
+                    <div class="wenhao" data-value="1" >?</div>
+
+                </li>
+                <li >
+                    <div class="xuanze" id="cate2"  data-value="2">发电原理</div>
+                    <div class="wenhao" data-value="2">?</div>
+                </li>
+                <li >
+                    <div class="xuanze" id="cate3"  data-value="3">电网知识</div>
+                    <div class="wenhao" data-value="3">?</div>
+                </li>
+                <li >
+                    <div class="xuanze" id="cate4"  data-value="4">用电常识</div>
+                    <div class="wenhao" data-value="4">?</div>
+                </li>
+                <li >
+                    <div class="xuanze" id="cate5"  data-value="5">电力设备</div>
+                    <div class="wenhao" data-value="5">?</div>
+                </li>
+                <li style="margin-top:30px;">
+                    <div class="zhuyi">注意！选错分类只能得7分哦</div>
+                </li>
+
+            </div>
+            <div style="width:100%;position: relative;overflow: hidden;"><button class="xiangsi" id="saveQues">提交</button></div>
+
+        </div>
+
+
+
+
+
+
+        <div class="hei" id="likeDetail" hidden>
+            <div class="tan" >
+                <div style="font-size:16px;">以下是系统在题库中找到的和您出的题目相似的题干，请查看是否重复。</div>
+                <div style="font-size:16px;">如果您确认重复，请不要提交，否则后台审核确认重复试题是会被扣分的。</div>
+                <div style="height:500px;overflow-y:auto;">
+                    <table class="biaoge" id="likeTable">
+                        <tbody>
+
+                        <tr>
+
+                            <th class="hao">序号</th>
+                            <th class="neirong">题干</th>
+
+                            <th class="lv">相似率</th>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+                <button class="quxiao" id="cancelInput">取消出题</button>
+                <button class="jixu" id="continueInput">继续出题</button>
+            </div>
+
+        </div>
+
+        </div>
+
+        </div>
+<div id="guild" class="modal-footer">
+    <p class="font-black">
+        <span class="black_font">版权所有 Copyright(C) 2014-2019 北京信锚网络有限公司</span>
+        <span class="black_font">备案/许可证编号为：<a href="http://www.miitbeian.gov.cn" target="_blank">京ICP备15034035号</a> </span>
+        <span class="black_font">信锚网.电力电气产品B2B信用电商平台</span>
+        <span class="black_font">京公网安备：11010802017612</span>
+    </p>
+</div>
+
+
+
+
+</body>
+<script>
+    $(function(){
+    	$.validator.addMethod("checkByteLength",function(value,element,params){
+			if(value){
+				var inputNum = value.replace(/[^\x00-\xff]/g, "**").length;
+    			if(inputNum > params){
+    				return false
+    			}
+			}
+			return true
+        },"请输入中文不超过5个字英文不超过10个字母长度的昵称");
+    	
+        $("#question").validate({
+            rules: {
+                questionDraftBody:{
+                    required: true,
+                    checkByteLength:100
+                },
+                a:{
+                    required: true,
+                    checkByteLength:20
+                },
+                b:{
+                    required: true,
+                    checkByteLength:20
+                },
+                c:{
+                    required: true,
+                    checkByteLength:20
+                },
+                d:{
+                    required: true,
+                    checkByteLength:20
+                }
+            },
+            messages:{
+                questionDraftBody:{
+                    required: "必填",
+                    checkByteLength:"请输入内容不超过100个字节的问题"
+                },
+                a:{
+                    required: "必填",
+                    checkByteLength:"请输入内容不超过20个字节的答案"
+                },
+                b:{
+                    required: "必填",
+                    checkByteLength:"请输入内容不超过20个字节的答案"
+                },
+                c:{
+                    required: "必填",
+                    checkByteLength:"请输入内容不超过20个字节的答案"
+                },
+                d:{
+                    required: "必填",
+                    checkByteLength:"请输入内容不超过20个字节的答案"
+                }
+            }
+        })
+        // $('.u .xuanze').click(function(e) {
+        //     $(this).addClass("current").parents("li").siblings().children(".xuanze").removeClass("current")
+        // });
+
+
+        // $('.quxiao').click(function(e) {
+        //     $('.hei').hide();
+        // });
+
+
+
+    });
+
+
+
+    $("#findLike").click(function () {
+        $("#likeDetail").dialog({
+
+            autoOpen: true,
+            width: 800,
+            modal: true,
+
+        })
+        var questionDraft = $('#question').serialize();
+        //发请求查相似
+        $.ajax({
+            url: "/wx/question/keyWords",
+            type: "Post",
+            data: questionDraft,
+            success: function (result) {
+                var questions = result.data;
+                console.log(questions)
+                if (questions != null) {
+                   //将数据展现
+                    $("#likeTable").html("");
+                    $(questions).each(function (i,item) {
+
+                        var html = "<tr>\n" +
+                            "\n" +
+                            "<th class=\"hao\">"+(i+1)+"</th>\n" +
+                            "<th class=\"neirong\">"+this.questionBody+"</th>\n" +
+                            "\n" +
+                            "<th class=\"lv\">"+this.numberSimilar *100+"%</th>\n" +
+                            "</tr>"
+                        $("#likeTable").append(html)
+
+                    })
+
+
+                }
+            }
+        })
+
+
+    });
+
+    $("#saveQues").click(function () {
+
+        var unionId = sessionStorage.getItem("unionid");
+        if(unionId == null || $.trim(unionId)==$.trim("")){
+            App.showConfirm("warn","当前登陆状态已丢失,请重新登录!",function () {
+                window.location.href="/pc/login/twoCodeLogin"
+            });
+
+        }else {
+            //有unionId,根据unionId获取用户信息
+            $.ajax({
+                url: "/wx/wxuser/findByUnionId/"+unionId,
+                type: "GET",
+                success: function (result) {
+                    if(result != null){
+                        var wxuser =  result;
+                        $("#openId").val(wxuser.openId)
+                       //获取到用户信息了
+                        if ($("#question").valid()) {
+                            //获取表单数据
+                            var questionDraft = $('#question').serialize();
+                            questionDraft.categoryId = $("#categoryId").val();
+                            var openId = wxuser.openId;
+                            //还需要当前登陆人的用户信息(id)
+                            //走一遍查询相似的方法,判断是否有相似题目
+                            $.ajax({
+                                url: "/wx/question/keyWords",
+                                type: "Post",
+                                data: questionDraft,
+                                success: function (data) {
+                                    var questions = data.data;
+                                    if (questions != null && questions.length > 0) {
+                                        //有相似题目,弹框提示
+                                        App.showConfirm("question", "您输入的题目在题库中存在相似题目(可在输入题目页点击查相似按钮进行查看详细信息),是否确认提交？", function () {
+                                            //点击确定,保存方法
+                                            $.ajax({
+                                                url: "/wx/question/saveQues",
+                                                type: "Post",
+                                                data: questionDraft,
+                                                success: function (result) {
+
+                                                    if (result.code == 20000) {
+                                                        App.showMessage("succeed", result.message, function () {
+                                                            //清空表单数据
+                                                            $("#question")[0].reset();
+                                                            $(".xuanze").removeClass("active")
+                                                            $(".xuanze").css("background", "");
+                                                        })
+                                                    } else {
+                                                        //提示错误信息
+                                                        App.showMessage("error", result.message)
+                                                    }
+                                                }
+                                            })
+
+
+                                        })
+                                    } else {
+                                        //没有相似题目直接提交
+                                        $.ajax({
+                                            url: "/wx/question/saveQues",
+                                            type: "Post",
+                                            data: questionDraft,
+                                            success: function (result) {
+                                                if (result.code == 20000) {
+                                                    App.showMessage("succeed", result.message, function () {
+                                                        //清空表单数据
+                                                        $("#question")[0].reset();
+                                                        $(".xuanze").removeClass("active")
+                                                        $(".xuanze").css("background", "");
+                                                    })
+                                                } else {
+                                                    //提示错误信息
+                                                    App.showConfirm("error", result.message)
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+
+                            })
+                        }
+
+                    }else {
+                        //根据unionId没查到用户
+                        window.location.href="/pc/login/twoCodeLogin"
+                    }
+                }
+            })
+
+
+        }
+
+
+
+    });
+
+    $("#cancelInput").click(function () {
+        $("#question")[0].reset();
+        $("#likeDetail").dialog("close")
+
+    });
+
+    $("#continueInput").click(function () {
+
+        $("#likeDetail").dialog("close")
+    });
+
+    $(".wenhao").click(function () {
+
+            if($(this).data("value") == 1){
+                App.showConfirm("","包括中国电力发展历史、目前的电力行业构成、普及性的电力数据、电力宏观知识、电力法规、电力安全、电力院校等方面的相关知识。")
+            }else if($(this).data("value") == 2){
+                App.showConfirm("","包括发电厂的基本知识、发电的原理和形式、绿色能源、新能源和储能方面的常识，等等。")
+
+            }else if($(this).data("value") == 3){
+                App.showConfirm("","主要包括电网的作用和构成、电网的组织形式、电网的整体架构、电力升降压和输送的基础知识，等等。")
+
+            }else if($(this).data("value") == 4){
+                App.showConfirm("","局限于10kV及以下的配电知识、普通工业用电知识、家庭用电常识、用电安全、缴存电费、节约用电，等等相关知识。")
+
+            }else if($(this).data("value") == 5){
+                App.showConfirm("","和电力设备相关的知识，以及涉及到电力应用、用电设备、电器知识、电力转换、电力存储，等等电力延伸方面的知识。")
+
+            }
+    });
+
+    $(".xuanze").click(function () {
+        //获取被被点击的value
+        $(".xuanze").removeClass("active");
+        $(this).addClass("active");
+
+        $(".xuanze").css("background", "");
+        $(this).css("background", "red");
+        var categoryId  = $(this).data("value");
+        $("#categoryId").val(categoryId)
+    })
+
+
+
+
+
+
+
+
+
+</script>
+</html>

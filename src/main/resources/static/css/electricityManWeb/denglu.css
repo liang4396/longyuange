@@ -1,0 +1,9 @@
+.tu{background:url("../images/bjweb.png") no-repeat;width:800px;height:780px;margin:0 auto;  background-size:cover;position:relative;}
+.juzhong{background:#8dc0cd!important;}
+.dajia{background:url("http://115.29.140.84:8081/static/img/flash.gif") no-repeat; width:400px; height:450px; background-size:400px 450px;position:absolute; left:200px; top:200px;}
+.jieshao{background:url("http://115.29.140.84:8081/static/img/wxjieshao.png") no-repeat;width:120px;height:100px;background-size:90px;position:absolute;left:80px;bottom:60px;}
+.guize{background:url("http://115.29.140.84:8081/static/img/wxguize.png") no-repeat;width:100px;height:100px;background-size:80px;position:absolute;left:240px;bottom:60px;}
+.wenzi{ position:absolute;right:50px;bottom:80px;}
+.wenzi h1{ margin:10px 0 ;}
+.wenzitu{background:url("../images/wenzi.png") no-repeat; width:340px;height:110px;position:absolute;right:50px;bottom:80px;}
+.erweima{width:110px;height:110px;position:absolute;right:50px;bottom:140px;}

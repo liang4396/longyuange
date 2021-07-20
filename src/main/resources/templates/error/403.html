@@ -1,0 +1,26 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<style>
+.wrap {
+	width: 1000px;
+	margin: 0 auto;
+	color: #444;
+}
+ /*error404*/
+ .error_404{ height:380px;text-align:center; padding-top:100px;}
+ .error_404 a{display:block; line-height:35px;}
+</style>
+<div class="wrap">   
+		<!-- location -->
+		<div style="display: flex;flex-wrap: wrap;" class="error_404">
+			<div style="flex-basis: auto;flex: 10000 1 0%;text-align: -webkit-right;">
+				<img src="/static/images/403.png"/>
+			</div>
+			<div style="margin: 23px 0px 0px 20px;flex-basis: auto;flex: 10000 1 0%;text-align: -webkit-left;">
+				<span class="font_18">对不起，你访问资源权限不足！</span>
+				<a style="margin-left:25px" href="javascript:history.go(-1)" class="font_12">返回之前浏览的页面</a>
+			</div>
+		</div>
+</div>
+</@layout>

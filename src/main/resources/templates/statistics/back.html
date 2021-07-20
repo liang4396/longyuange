@@ -1,0 +1,291 @@
+<#include "../layout/layout.html">
+<@layout>
+<#include "menu.html"/>
+<link type="text/css" rel="stylesheet" href="/static/css/usertree/usertree.css">
+	<style>
+		.dl_width158 {
+			width: 300px;
+			height: 30px;
+			float: left;
+		}
+		
+		.dl_w_two {
+			width: 200px
+		}
+	</style>
+        <div class="con_right">
+            <div class="con_right_top">
+                <h1 class="dl_h1">账号管理<!--<a href="tianjiayonghu.html"><input  style="padding:6px 10px;"type="button" value="添加账户"class="top_button"/></a>--></h1>
+                <div class="dl_blue"></div>
+
+            </div>
+            <div class="con_right_bottom padding_0">
+                <div class="dl_h">
+                    <div class="lg_con">
+                        <div class="user">
+                            <div class=" vip_accountmenu">
+                                <ul id="userTree" class="ztree">
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="user_canshu">
+                    	<input id="userId" hidden value="${userId}">
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em></em>姓名：</div>
+                                <div class="dl_w_two" id="realname"></div>
+                            </div>
+                            
+                        </div>
+						<div class="dl_w">
+                            <div class="dl_width158">
+                                <div class="dl_w_one w_80"><em></em>昵称：</div>
+                                <div class="dl_w_two" id="username"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em></em>手机号码：</div>
+                                <div class="dl_w_two" id="phoneNum"></div>
+                            </div>
+                        </div>
+                        <div class="view dl_w">
+                            <div class="dl_width300">
+                                <div class="dl_w_one w_80"><em></em>权限列表：</div>
+                                <div class="dl_w_two" id="roleId"></div>
+                            </div>
+                        </div>
+                        <div class="view p_center">
+                            <input id="delUserBtn" type="button" value="删除" class="two_button">
+                            <input id="updateAuthBtn" type="button" value="修改权限" class="two_button">
+                            <input id="updatePwdBtn" type="button" value="重置密码" class="two_button">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+<script>
+	var showUser;
+	var isNotClick = true;
+	$(function(){
+		$(document).attr("title","账号维护");
+	    openMenu("htgl");//导航栏回显
+	    openAdminMenu("userinfo");/*目录添加颜色*/
+	    
+		treeInit();
+		
+		if($("#userId").val()){
+			isNotClick = true;
+			showUserinfo($("#userId").val())
+		}
+		
+		$("#updateAuthBtn").on("click",function(){
+			if($("#userId").val()){
+				window.location = "/statistics/auth/" + $("#userId").val()	
+			} else {
+				App.showMessage("warning", "请选择用户")
+			}
+		})
+		
+		$("#updatePwdBtn").on("click",function(){
+			if($("#userId").val()){
+				$.ajax({
+					type:"put",
+					url:"/user/updatePwd/" + $("#userId").val(),
+					success:function(data){
+						App.showMessage("succeed", "重置成功")
+					},
+					error:function(error){
+						App.showMessage("error", "重置失败")
+					}
+				})
+			} else {
+				App.showMessage("warning", "请选择用户")
+			}
+		})
+		
+		$("#delUserBtn").on("click",function(){
+			if($("#userId").val()){
+				App.showConfirm("question","您确定删除该用户吗？", function(){
+        			delUser();
+        		})
+			} else {
+				App.showMessage("warning", "请选择用户")
+			}
+		})
+		
+	})
+	
+	function delUser(){
+		$.ajax({
+        	type:"get",
+        	url:"/user/currect",
+        	data:{},
+        	success:function(info){
+        		$.ajax({
+        			type:"delete",
+        			url:"/user/delete/" + $("#userId").val(),
+        			success:function(result){
+                		if(result.code == "20000"){
+                			App.showMessage("succeed", result.message, function(){
+                				if(info.data.userId == $("#userId").val()){
+                    				window.location = "/logout"
+                    			} else {
+                    				window.location = "/statistics"
+                    			}
+                			})
+                    	} else {
+    	            		App.showMessage("error", result.message)
+                    	}
+                	},
+                	error:function(e){
+                		App.showMessage("error", "更新失败")
+                	}
+        		})
+        	},
+        	error:function(e){
+        		
+        	}
+        })
+	}
+	
+	function treeInit(){
+		// 会员树setting设置
+		var setting = {
+			view:{
+				showLine:false,
+				showIcon:false
+			},
+			async:{
+				enable: true,
+				url: "/user/tree",
+				autoParam: ["userId"]
+			},
+			data: {
+				key: {
+					name: "realname"
+				},
+				simpleData: {
+					enable: true,
+					idKey: "userId",
+					pIdKey: "roleId",
+					rootPId: 0
+				}
+			},
+			callback: {
+				onAsyncError: onAsyncError,
+				onAsyncSuccess:onAsyncSuccess,
+				beforeClick: true,				// 父节点点击前事件
+				onClick:treeClick					// 父节点点击
+			}
+		};
+		
+		var data = [
+			{realname:"审核", userId:2, isParent:true},
+			{realname:"数据", userId:3, isParent:true}
+		]
+		
+		$.fn.zTree.init($("#userTree"), setting, data);
+	}
+	
+	/**
+	 * 父节点点击事件
+	 */
+	function treeClick(treeId, treeNode){
+
+		isNotClick = false;
+		
+		// 取得节点信息
+		var zTree = $.fn.zTree.getZTreeObj(treeNode),
+		nodes = zTree.getSelectedNodes();
+
+		// 是父类节点
+		if (nodes[0].isParent) {
+			expandNode(zTree,nodes);
+		}  else {
+			if(nodes[0].userId.indexOf("_") != -1){
+				showUserinfo(nodes[0].userId.substring(nodes[0].userId.indexOf("_") + 1))
+			} else {
+				showUserinfo(nodes[0].userId)
+			}
+		}
+	}
+
+	/**
+	 * 展开 / 折叠父节点控制
+	 */
+	function expandNode(zTree,nodes) {
+		var callbackFlag = $("#callbackTrigger").attr("checked");
+		for (var i=0, l=nodes.length; i<l; i++) {
+			zTree.setting.view.fontCss = {};
+			zTree.expandNode(nodes[i], null, null, null, callbackFlag);
+		}
+	}
+
+	/**
+	 * 异常处理
+	 */
+	function onAsyncSuccess(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+		if(isNotClick){
+			var zTree = $.fn.zTree.getZTreeObj("userTree");
+			var node = zTree.getNodeByParam("userId", "user_" + showUser.userId, null);
+			zTree.selectNode(node)	
+		}
+	}
+	
+	/**
+	 * 异常处理
+	 */
+	function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+		var zTree = $.fn.zTree.getZTreeObj("userTree");
+		alert("异步获取数据出现异常。");
+		treeNode.icon = "";
+		zTree.updateNode(treeNode);
+	}
+	
+	function showUserinfo(userId){
+		$.ajax({
+			type:"get",
+			url:"/user/" + userId,
+			success:function(result){
+				showUser = result.data
+				$("#userId").val(showUser.userId)
+				if(isNotClick){
+					var zTree = $.fn.zTree.getZTreeObj("userTree");
+					var node = zTree.getNodeByParam("userId", showUser.roleId, null);
+					zTree.expandNode(node);	
+				}
+				
+        		$(".dl_w_two").each(function(index, item){
+        			let id = item.id
+        			$(item).html(showUser[id]);
+        			if(id == "roleId"){
+        				switch(showUser[id]){
+        				case 1:
+        					$(item).html("输入")
+        					break;
+        				case 2:
+        					$(item).html("审核")
+        					break;
+        				case 3:
+        					$(item).html("数据")
+        					break;
+        				}	
+        			}
+        		})
+        		
+        		$(".p_center").show()
+        		if(showUser.isDel == 1){
+        			$(".p_center").hide()
+        		}
+			}
+		})
+	}
+</script>
+</@layout>

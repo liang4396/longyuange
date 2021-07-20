@@ -1,0 +1,419 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<style>
+    .tdpd {
+        padding: 0px 0px 0px 5px !important
+    }
+
+    .biaoge tr {
+        font-size: 12px;
+        height: 30px;
+        line-height: 18px;
+    }
+</style>
+<div class="con" style="width:150px;">
+    <ul class="ztree" id="categoryTree">
+    </ul>
+</div>
+<div style="padding:20px 10px;width:900px;" class="con_right">
+    <div class="con_right_top">
+        <h1 class="dl_h1" id="categoryTableName">题库
+        </h1>
+        <div class="dl_blue"></div>
+    </div>
+    <div class="con_right_bottom padding_0">
+        <table style="width:99%" border="1" id="myTable" cellspacing="1" cellpadding="1" class="biaoge">
+        </table>
+    </div>
+    <div style="text-align: center;">
+        <!--<input type="button" class="two_button" value="导入">-->
+        <!--        <input type="button" class="two_button" onclick="exportQues()" value="导出">-->
+        <@security.authorize access="hasRole('DATA') or hasRole('ADMIN')">
+        <input type="button" class="two_button" onclick="exportQues()" value="导出">
+    </@security.authorize>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<@security.authorize access="hasRole('CHECKER') or hasRole('INPUTER')">
+<input hidden id="roleId" value="0">
+</@security.authorize>
+<@security.authorize access="hasRole('DATA')  or hasRole('ADMIN')">
+<input hidden id="roleId" value="1">
+</@security.authorize>
+
+<!--隐藏域-->
+<!--移动使用目录id-->
+<input id="categoryId" hidden>
+<!-- 移动目录使用树-->
+<div hidden id="moveDiv">
+    <ul class="ztree" id="moveTree">
+
+    </ul>
+</div>
+<!--点击左侧目录树id修改列表信息-->
+<input id="categoryTableId" hidden>
+
+<form hidden id="exportExcelpanel" action="/export/question">
+    <input name="categoryIds"  value="all" >
+</form>
+<script>
+    /*进入页面默认加载目录树 和问题列表*/
+
+    $(function () {
+        $(document).attr("title", "试题展示");
+        openMenu("stzs");//目录回显
+        queryCategoryTree(categorySetting);
+        loadList();//加载列表
+        setTimeout("openTreee()", "200");  //2000毫秒后执行test()函数，只执行一次。
+    })
+
+
+    var tableList;
+
+    /*加载列表数据*/
+    function loadList(searchValue) {
+
+        var aoData = {
+            searchValue: function () {
+                if (getQueryString("searchValue") == null) {
+                    return "";
+                }
+                return getQueryString("searchValue");
+            },
+            categotyId: function () {
+                return $("#categoryTableId").val();
+            }
+        }
+
+        var width = "60px";
+        var divWidth = "305px";
+        if ($("#roleId").val() == 0) {
+            width = "40px";
+            divWidth = "325px";
+        }
+
+        tableList = $('#myTable').DataTable({
+            "bLengthChange": false,   // 是否改变每页显示行数
+            'iDisplayLength': 15, //每页初始显示5条记录
+            "searching": false,      // 是否显示搜索框
+            "processing": true,       // 翻页或者搜索的时候，前端是否给出“正在搜索”等提示信息
+            "serverSide": true,       // true表示使用后台分页
+            sPaginationType: "first_last_numbers",  // 显示首页和末页
+            "bInfo": false,
+            "ajax": {
+                "url": "/search/page",  // 异步传输的后端接口url
+                "type": "POST",      // 请求方式
+                "data": aoData
+            },
+            "columns": [
+                {
+                    title: "序号",
+                    width: "60px",
+                    "class": "align",
+                    "data": null,
+                    "render": function (data, type, full, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                }, // 序号
+                {
+                    title: "试题内容",
+                    "class": "tdpd",
+                    data: function (data) {
+                        if ($("#roleId").val() == 0 && data.isUpdate == 1) {
+                            return "<div  title=\"" + data.questionBody + "\"><a style='color:red' href='/question/update?id=" + data.questionId + "&&oprate=0'>" + data.questionBody + "</a></div>"
+                        } else {
+                            return "<div  title=\"" + data.questionBody + "\"><a style='color:black' href='/question/update?id=" + data.questionId + "&&oprate=0'>" + data.questionBody + "</a></div>"
+                        }
+                    }
+                }
+                /*               {
+                                   title: "操作",
+                                   width: width,
+                                   "class":"align",
+                                   data: function (data) {
+                                       if($("#roleId").val() == 1){
+                                           return "<a href=\"/question/detail?id=" + data.questionId + "&&oprate=0" + "\" >查看</a> | " +
+                                           "<a href=\"/question/update?id=" + data.questionId + "&&oprate=0" + "\" >编辑</a>" +
+                                           "</br><a href='javascript:void(0)' onclick='moveQues(\"" + data.questionId + "\",\"" + data.categoryId + "\")'>移动</a>" +
+                                           " | <a href='javascript:void(0)' onclick='deleteById(\"" + data.questionId + "\")'>删除</a>";
+                                       } else {
+                                           return "<a href=\"/question/detail?id=" + data.questionId + "&&oprate=0" + "\" >查看</a>";
+                                       }
+                                   }
+                               }*/
+            ]
+        });
+
+        $(tableList.column(0).header()).css("padding", "0px")
+        $(tableList.column(1).header()).css("padding", "0px")
+        $(tableList.column(2).header()).css("padding", "0px")
+        $(tableList.column(6).header()).css("padding", "0px 5px")
+        $(tableList.column(7).header()).css("padding", "0px 5px")
+    };
+
+
+    /*搜索后展开树信息*/
+    function openTreee(searchValue) {
+        var searchValue = getQueryString("searchValue");
+        if (searchValue != null && searchValue.trim() != "") {
+            $.ajax({
+                type: "post",
+                url: "/search/searchGtoup",
+                data: {"searchValue": searchValue},
+                dataType: "json",
+                success: function (data) {
+                    if (data) {
+                        var list = data;
+                        var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                        for (var i = 0; i < list.length; i++) {
+                            zTree.expandNode(zTree.getNodeByParam("id", list[i][1], null));//展开指定节点
+                            /*zTree.selectNode(zTree.getNodeByParam("id",list[i][0],null));//选中指定节点*/
+                            treenode = zTree.getNodeByParam("id", list[i][0], null);
+                            $("#" + treenode.tId).find("a").addClass("curSelectedNode");
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /*删除问题的方法*/
+    function deleteById(questionId) {
+        App.showConfirm("question", "确定删除该问题？", function () {
+            $.ajax({
+                url: "/question/delete/" + questionId,
+                type: "delete",
+                success: function (data) {
+                    App.showMessage("succeed", data.message, function () {
+                        /*刷新题目数据*/
+                        tableList.ajax.reload()
+                    })
+                }
+            });
+        })
+    }
+
+
+    /*移动目录方法*/
+    function moveQues(questionId, categoryId) {
+        //加载树
+        queryMoveTree(moveTreeSetting, categoryId);
+        var oprate = 0;/*0：表示正式表数据 1 表示移动草稿表数据*/
+        $("#moveDiv").dialog({
+            title: "问题移动目录",
+            autoOpen: true,
+            width: 200,
+            modal: true,
+            buttons: {
+                "移动": function () {
+                    var categoryId = $('#categoryId').val();
+                    if (categoryId) {
+                        $.ajax({
+                            url: "/questiondraft/move/" + questionId + "/" + categoryId + "/" + oprate,
+                            type: "Put",
+                            success: function (data) {
+                                App.showMessage("succeed", data.message, function () {
+                                    /*刷新题目数据*/
+                                    tableList.ajax.reload()
+                                    $("#moveDiv").dialog("close");
+                                })
+                            }
+
+                        });
+                    } else {
+                        App.showMessage("warning", "请选择移动目录")
+                    }
+                },
+                "取消": function () {
+                    $("#moveDiv").dialog("close");
+                }
+            },
+            show: {
+                effect: "fade",
+                duration: 500
+            },
+            hide: {
+                effect: "fade",
+                duration: 500
+            },
+            closeOnEscape: false,
+            beforeClose: function (event, ui) {
+            },
+            close: function (event, ui) {
+                $("#moveDiv").dialog("destroy");
+            }
+        });
+    }
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/ztree",
+            "dataType": "json",
+            "success": function (data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+
+    //查询移动目录信息方法
+    function queryMoveTree(moveTreeSetting, categoryId) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/findParentId",
+            "data": {"categoryId": categoryId},
+            "dataType": "json",
+            "success": function (dataParenId) {
+                $.ajax({
+                    "type": "post",
+                    "url": "/category/ztree",
+                    "dataType": "json",
+                    "success": function (data) {
+                        zNodes = data;
+                        var t = $("#moveTree");
+                        t = $.fn.zTree.init(t, moveTreeSetting, zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("moveTree");
+                        var rootNode = zTree.getNodeByParam("id", 0);
+                        zTree.expandNode(rootNode, true, false);
+                        zTree.setting.edit.drag.isCopy = false;
+                        zTree.setting.edit.drag.isMove = true;
+                        zTree.setting.edit.drag.prev = true;
+                        zTree.setting.edit.drag.inner = true;
+                        zTree.setting.edit.drag.next = true;
+                        if (dataParenId != null) {
+                            zTree.expandNode(zTree.getNodeByParam("id", dataParenId, null));//展开指定节点
+                            zTree.selectNode(zTree.getNodeByParam("id", categoryId, null));//选中指定节点
+                            $("#categoryId").val(categoryId);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    /*展示题目上方目录信息*/
+    function showCategoryName(categoryId) {
+        $.ajax({
+            type: "post",
+            url: "/category/findNamePathById",
+            data: {"categoryId": categoryId},
+            dataType: "json",
+            success: function (data) {
+                if (data.flag) {
+                    $("#categoryTableName").html(data.data);
+                }
+            }
+        });
+    }
+
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+    var categorySetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            onClick: function (treeId, treeNode) {
+                // 取得节点信息
+                var zTree = $.fn.zTree.getZTreeObj(treeNode),
+                    nodes = zTree.getSelectedNodes();
+
+                // 是父类节点
+                if (nodes[0].isParent) {
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        zTree.expandNode(nodes[i]);
+                    }
+                }
+            }
+            , beforeClick: function (treeId, treeNode) {
+                if (!treeNode.isParent) {
+                    //赋值当前目录的id
+                    $("#categoryTableId").val(treeNode.id);
+                    //在目录上方显示目录名称
+                    showCategoryName(treeNode.id);
+                    /*刷新题目数据*/
+                    tableList.ajax.reload()
+                }
+                if ($("#categoryTree").find(".curSelectedNode")) {
+                    $("#categoryTree").find(".curSelectedNode").removeClass("curSelectedNode");
+                }
+            }
+        }
+    };
+
+
+    /* 移动分类类目配置信息 */
+    var moveTreeSetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeClick: function (treeId, treeNode) {
+                $("#categoryId").val("");
+                if (!treeNode.isParent) {
+                    $("#categoryId").val(treeNode.id);
+                }
+                return true;
+            }
+        }
+    };
+
+    function  exportQues() {
+        App.showConfirm("question", "确定导出所有的试题信息？", function () {
+            document.getElementById("exportExcelpanel").submit();
+        })
+    }
+
+</script>
+</@layout>

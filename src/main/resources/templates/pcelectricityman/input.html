@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/chuti.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/electricityManWeb/gonggong.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery-ui.min.css">
+    <style>
+        .lghz, .csz, .lgs_con {
+            height: 210px;
+            overflow-y: scroll;
+        }
+
+        .lghz h6, .csz h6, .lgs_con h6 {
+            margin: 0 0 0 0;
+        }
+
+        .dl_width160 {
+            width: 500px;
+        }
+
+        .dl_width300 {
+            width: 500px;
+        }
+
+        .dl_w_two {
+            width: 300px;
+        }
+        footer{
+	border-top:1px solid #EBEBEB;
+	margin:30px auto;
+	padding-bottom:20px;
+	margin-bottom:0;
+}
+#guild ul{ list-style:none; padding:0; margin:0;}
+#guild ul li{ display:block; float:left; height:20px; line-height:20px;}
+#guild ul li.guild_img{ width:10px; text-align:center;}
+#guild ul li a{ width:70px; font-size:12px; display:block; color:#717171; float:left; font-family:'瀹嬩綋'; text-align:center;}
+#guild ul li a.guild_li_1{ text-align:left; width:60px;}
+#guild p{line-height:22px; margin-top:10px;}
+#guild p span,#guild p label{ font-weight:normal;  font-size:12px; font-family:'瀹嬩綋'; color:#717171;display:block;text-align:center; margin-right:30px;}
+#guild p span.black_font{ color:#3f3f3f;}
+#guild p label.black_font{ color:#3f3f3f;}
+#guild p label{ display:block;}
+.modal-footer{ 
+	border-top:1px solid #EBEBEB;
+	width:800px; 
+	margin:0 auto; 
+	text-align:left;
+	padding:0;
+	position: absolute;
+	bottom:0px;
+}
+.modal-footer > p > a{
+	color:#3f3f3f;
+	margin-right:20px;
+}
+    </style>
+    <script src="/static/ceeemall/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.ui.min.js"></script>
+    <script>
+
+        $(function () {
+            $(".juzhong").css('min-height', $(window).height());
+            var unionid = $("#unionid").val();
+            sessionStorage.setItem("unionid", unionid);
+        })
+
+        //跳转方法
+        function toDetail() {
+            var unionid = sessionStorage.getItem("unionid", unionid);
+            $.ajax({
+                url: "/pc/login/existUnionId",
+                type: "POST",
+                data: {"unionId": unionid},
+                datatype: "json",
+                success: function (data) {
+                    if (data.data == 1) {
+                        //扫码后判断用户存在
+                        sessionStorage.setItem("unionid", unionid);
+                        window.location.href = "/pc/login/inputDetail";
+                    } else {
+                        //用户不存在
+                        $("#TwoCodeDiv").dialog({
+                            title: "请您去微信小程序中更新个人信息！",
+                            autoOpen: true,
+                            modal: true,
+                            // buttons: {
+                            //     "确定": function () {
+                            //     },
+                            //     "取消": function () {
+                            //         $("#TwoCodeDiv").dialog("close");
+                            //     }
+                            // },
+                            show: {
+                                effect: "fade",
+                                duration: 500
+                            },
+                            hide: {
+                                effect: "fade",
+                                duration: 500
+                            },
+                            closeOnEscape: false,
+                            beforeClose: function (event, ui) {
+                            },
+                            close: function (event, ui) {
+                                $("#TwoCodeDiv").dialog("destroy");
+                            }
+                        });
+                        //开始轮训
+                        var timer = setInterval(function () {
+                            ajax_wx_pay_status(timer)
+                        }, 5000);
+
+                        function ajax_wx_pay_status(timer) {
+                            $.ajax({
+                                url: "/pc/login/existUnionId",
+                                type: "POST",
+                                data: {"unionId": unionid},
+                                datatype: "json",
+                                success: function (data) {
+                                    if (data.data == 1) {
+                                        //扫码后判断用户存在
+                                        //此处可以进行相应业务代码的编写，例如支付成功提示，或者直接进行页面跳转.
+                                        clearInterval(timer);
+                                        sessionStorage.setItem("unionid", unionid);
+                                        window.location.href = "/pc/login/inputDetail";
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body class="jb">
+<div class="juzhong">
+    <div class="tu">
+        <div class="renwu"></div>
+        <div class="chuti" onclick="toDetail()"></div>
+		<div id="guild" class="modal-footer">
+		<p class="font-black">
+		            <span class="black_font">版权所有 Copyright(C) 2014-2019 北京信锚网络有限公司</span>
+		            <span class="black_font">备案/许可证编号为：<a href="http://www.miitbeian.gov.cn" target="_blank">京ICP备15034035号</a> </span>
+		            <span class="black_font">信锚网.电力电气产品B2B信用电商平台</span>        
+					<span class="black_font">京公网安备：11010802017612</span>
+		</p>
+		</div>
+    </div>
+    <input hidden id="unionid" name="unionid" value="${unionid}">
+</div>
+<div hidden id="TwoCodeDiv" style="text-align: center">
+    <img src="/static/images/wxTwoCode.png" style="width: 200px;height: 200px">
+</div>
+</body>
+</html>

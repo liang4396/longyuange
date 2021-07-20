@@ -1,0 +1,97 @@
+<#include "../layout/layout.html"/>
+
+<@layout>
+<#include "menu.html"/>
+<div class="con_right"> 
+ <div class="con_right_top"> 
+  <h1 class="dl_h1">信息维护
+   <!--<a href="tianjiazhanghao.html"><input type="button" value="添加账户"class="top_button"/></a>--></h1> 
+  <div class="dl_blue"></div> 
+ </div> 
+ <div class="con_right_bottom padding_0"> 
+  <div class="dl_h"> 
+   <div class="user_canshu"> 
+    <div class="dl_w"> 
+     <div class="dl_width300"> 
+      <div class="dl_w_one w_80">
+       <em></em>姓名：
+      </div> 
+      <div class="dl_w_two" id="realname">
+      </div> 
+     </div> 
+    </div> 
+    <div class="dl_w"> 
+     <div class="dl_width300"> 
+      <div class="dl_w_one w_80">
+       <em></em>昵称：
+      </div> 
+      <div class="dl_w_two" id="username">
+      </div> 
+     </div> 
+    </div> 
+    <div class="dl_w"> 
+     <div class="dl_width300"> 
+      <div class="dl_w_one w_80">
+       <em></em>手机号码：
+      </div> 
+      <div class="dl_w_two" id="phoneNum">
+      </div> 
+     </div> 
+    </div> 
+    <div class="dl_w"> 
+     <div class="dl_width300"> 
+      <div class="dl_w_one w_80">
+       <em></em>权限列表：
+      </div> 
+      <div class="dl_w_two" id="roleName">
+      </div> 
+     </div> 
+    </div> 
+    <div class="p_center"> 
+     <a href="/user/update"><input type="button" value="修改信息" class="two_button" /></a> 
+     <a href="/user/updatePwd"><input type="button" value="修改密码" class="two_button" /></a> 
+    </div> 
+   </div> 
+  </div> 
+ </div> 
+</div>
+<script>
+    $(function(){
+    	$(document).attr("title","信息维护");
+        openMenu("grgl");
+        openUserMenu("user");
+        $.ajax({
+        	type:"get",
+        	url:"/user/currect",
+        	data:{},
+        	success:function(result){
+        		let obj = result.data
+        		$(".dl_w_two").each(function(index, item){
+        			let id = item.id
+        			$(item).html(obj[id]);
+        		})
+        		$.ajax({
+		        	type:"get",
+		        	url:"/user/news",
+		        	data:{
+		        		userId: obj.userId
+		        	},
+		        	success:function(news){
+		        		if(news.length > 0){
+		        	    	App.showMessage("warning","您有" + news.length + "道试题未通过审核，请查看", function(){
+		        	    		window.location = "/questiondraft/unpass"
+		        	    	})
+		        		}
+		        	},
+		        	error:function(e){
+		        		
+		        	}
+		        })
+        	},
+        	error:function(e){
+        		
+        	}
+        })
+    })
+</script>
+</@layout>

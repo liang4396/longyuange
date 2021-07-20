@@ -1,0 +1,354 @@
+
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/shujuzhengli.css" >
+<style>
+	.error {
+	    display: block;
+	}
+</style>
+<script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<div class="con">
+    <ul  class="ztree" id="categoryTree">
+    </ul>
+</div>
+<div class="con_right">
+    <div class="con_right_top">
+        <h1 class="dl_h1" id="categoryNamePath">试题修改</h1>
+        <div class="dl_blue"></div>
+
+    </div>
+    <form id="question">
+        <div class="con_right_bottom padding_0">
+            <div class="dl_w">
+                <div class="dl_width200" style="width:800px;">
+                    <div class="dl_w_one"><em>*</em>问题：</div>
+                    <div class="dl_w_two"><input name="questionDraftBody" id="quesBody" type="text" class="dl_text120" style="width:650px;"></div>
+                </div>
+
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width160">
+                    <div class="dl_w_one"><em>*</em>难度：</div>
+                    <div class="dl_w_two"><select name="difficulty"  id="diff" class="dl_select60">
+                        <option value=2>初级</option>
+                        <option value=1>中级</option>
+                        <option value=0>高级</option>
+                    </select></div>
+                </div>
+
+            </div>
+
+
+
+            <div class="dl_w">
+                <div class="dl_width300" >
+                    <div class="dl_w_one"><em>*</em>A：</div>
+                    <div class="dl_w_two"><input name="A"   id="a" class="dl_text120" style="width:200px;" type="text"></div>
+                </div>
+
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>B：</div>
+                    <div class="dl_w_two"><input name="B" id="b" type="text" class="dl_text120" style="width:200px;">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="dl_w">
+                <div class="dl_width300" >
+                    <div class="dl_w_one"><em>*</em>C：</div>
+                    <div class="dl_w_two"><input name="C"  id="c" class="dl_text120" style="width:200px;" type="text"></div>
+                </div>
+
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>D：</div>
+                    <div class="dl_w_two"><input name="D"  id="d" type="text" class="dl_text120" style="width:200px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dl_w">
+                <div class="dl_width300">
+                    <div class="dl_w_one"><em>*</em>正确答案：</div>
+                    <div class="dl_w_two"><select id="rightAns"  name="rightanswer" class="dl_select60">
+                        <option>A</option>
+                        <option>B</option>
+                        <option>C</option>
+                        <option>D</option>
+                    </select></div>
+                </div>
+
+            </div>
+
+           <input hidden id="registUser" name="registUser" type="text" value="">
+           <input hidden id="registTime" name="registTime" type="text" value="">
+
+
+        </div>
+    </form>
+    <div style="text-align: center;">
+        <input type="button" id="UpdateQues" class="two_button" value="提交" style="padding:10px 20px;font-size:20px;">
+        <input type="button"  class="two_button" onclick="javascript:history.back(-1);" value="返回" style="padding:10px 20px;font-size:20px;">
+
+
+
+
+    </div>
+
+</div>
+<input type="hidden" id="categoryId"><!--目录id隐藏域-->
+</div>
+</div>
+</div>
+</div>
+</body>
+<script>
+    $(function () {
+    	$(document).attr("title","我的任务");
+        queryCategoryTree(categorySetting);/*获取目录树*/
+        loadQuestion();/*加载题目信息*/
+        setTimeout("openTree()","500");   /*展开题目目录*/
+
+        $("#question").validate({
+			rules: {
+				questionDraftBody:{
+					required: true,
+					maxlength:50
+				},
+				A:{
+					required: true,
+					maxlength:10
+				},
+				B:{
+					required: true,
+					maxlength:10
+				},
+				C:{
+					required: true,
+					maxlength:10
+				},
+				D:{
+					required: true,
+					maxlength:10
+				}
+			},
+			messages:{
+				questionDraftBody:{
+					required: "必填",
+					maxlength:"请输入内容不超过50个字的问题"
+				},
+				A:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				B:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				C:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				},
+				D:{
+					required: "必填",
+					maxlength:"请输入内容不超过10个字的答案"
+				}
+			}
+		})
+    });
+
+    var oprate;
+
+    //保存题目
+    $('#UpdateQues').click(function () {
+
+    	if($("#question").valid()){
+    	    //从草稿箱来的
+            var categoryId = $("#categoryId").val();
+                var questionDraft = $('#question').serialize();
+                var id = getUrlParam("id");
+                console.log(questionDraft);
+                $.ajax({
+                    url: "/questiondraft/updateDraft/"+id,
+                    data:$('#question').serialize()+"&&categoryId="+categoryId,
+                    type: "put",
+                    datatype: "json",
+                    success: function (data) {
+                        if(data.code == 20000){
+                            //提交成功,提示成功信息
+                            App.showMessage("succeed", data.message, function(){
+                                //返回审核列表
+                                window.location.href = "/questiondraft/unpass";
+                            })
+                        }else {
+                            App.showMessage("error", data.message)
+                        }
+                    }
+                })	
+    	}
+    });
+
+
+    //数据回显
+    function loadQuestion(){
+        var id=getUrlParam("id");
+        oprate = getUrlParam("oprate");
+        $.ajax({
+            url: "/questiondraft/findOne/"+id+"/"+oprate,
+            type: "GET",
+            success: function (data) {
+                console.log(data.message)
+                if (oprate == 1){
+                    //查询草稿箱
+                    $('#quesBody').val(data.data.questionDraftBody);
+                    $('#categoryId').val(data.data.categoryId);
+
+                }else {
+                    //查询正式库
+                    $('#quesBody').val(data.data.questionBody);
+                    $('#categoryId').val(data.data.categoryId);
+                }
+
+                /*$('#diff').val(data.data.difficulty == 0 ? "高级": data.data.difficulty ==1? "中级":"低级" );*/
+                $('#diff').val(data.data.difficulty);
+                $('#a').val(data.data.a);
+                $('#b').val(data.data.b);
+                $('#c').val(data.data.c);
+                $('#d').val(data.data.d);
+                $('#rightAns').val(data.data.rightanswer);
+                $('#registTime').val(data.data.registTime);
+                $('#registUser').val(data.data.registUser);
+                $.ajax({
+                    url: "/category/findNamePathById",
+                    type: "POST",
+                    data: {categoryId:data.data.categoryId},
+                    success: function (result) {
+                        console.log(result)
+                        $('#categoryNamePath').html(result.data);
+
+                    }
+                })
+            }
+        })
+    }
+
+    /*展开题目目录*/
+    function openTree() {
+        var categoryId = $("#categoryId").val();
+        var data = {
+            "categoryId":categoryId
+        }
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/findParentId",
+            "dataType" : "json",
+            "data":data,
+            "success" : function(data) {
+                if(data!=null){
+                    var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                    zTree.expandNode(zTree.getNodeByParam("id",data,null));//展开指定节点
+                    zTree.selectNode(zTree.getNodeByParam("id",categoryId,null));//选中指定节点
+                }
+            }
+        });
+    }
+
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+    var categorySetting = {
+        edit : {
+            enable : false
+        },
+        view : {
+            selectedMulti : true,
+            dblClickExpand : false,
+            showIcon:false,
+            showLine : true,
+            showTitle:true,
+            fontCss: { 'font-size': '15px;','color':'#0066c'}//统一设置样式
+        },
+        data : {
+            simpleData : {
+                enable : true,
+                idKey : "id",
+                pIdKey : "pid",
+                rootPId : ""
+            }
+        },
+        callback : {
+            beforeClick : function(treeId, treeNode) {
+                var zTree = $.fn.zTree.getZTreeObj("Collecttree");
+
+                return true;
+            },
+            onClick:function(treeId, treeNode){
+                // 取得节点信息
+                var zTree = $.fn.zTree.getZTreeObj(treeNode),
+                    nodes = zTree.getSelectedNodes();
+
+                // 是父类节点
+                if (nodes[0].isParent) {
+                    for (var i=0, l=nodes.length; i<l; i++) {
+                        zTree.expandNode(nodes[i]);
+                    }
+                }else{
+                	$.ajax({
+                        url: "/category/findNamePathById",
+                        type: "POST",
+                        data:{categoryId:nodes[0].id},
+                        success: function (result) {
+                            console.log(result)
+                            $('#categoryNamePath').html(result.data);
+
+                        }
+                    });
+                    // swal(   treeNode.name+ "========"+treeNode.id)
+                    $("#categoryId").val(nodes[0].id);
+                }
+            }
+        }
+    };
+
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type" : "post",
+            "url" : "/category/ztree",
+            "dataType" : "json",
+            "success" : function(data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+            }
+        });
+    }
+
+    /*获取url中的值*/
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  // 匹配目标参数
+        if (r != null) return unescape(r[2]); return null; // 返回参数值
+    }
+</script>
+</@layout>

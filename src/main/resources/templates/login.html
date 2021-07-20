@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link type="text/css" rel="stylesheet" href="../static/css/login/denglu.css" >
+
+	<style>
+		.error {
+			color:red;
+		}
+    </style>
+
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+
+    <script type="text/javascript" src="/static/js/common/app.js"></script>
+    <script type="text/javascript" src="/static/js/common/artDialogPlugin.js"></script>
+    <script type="text/javascript" src="/static/js/artDialogPlugin.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/css/dialog/blue.css">
+    <script>
+        $(function(){
+            $('.beijing').css('height',($(window).height()))
+        })
+
+        $(function(){
+            $('.text').focus(function(e) {
+                $(this).css('background','url("../static/img/login/xuanzhongrentou.png") no-repeat 0px 10px');
+
+            });
+            $('.text').blur(function(e) {
+
+                $(this).css('background','url("../static/img/login/rentou.png") no-repeat 0px 10px');
+            });
+            $('.password').focus(function(e) {
+                $(this).css('background','url("../static/img/login/xuanzhongsuo.png") no-repeat 0px 10px');
+
+            });
+            $('.password').blur(function(e) {
+
+                $(this).css('background','url("../static/img/login/suo.png") no-repeat 0px 10px');
+            });
+
+            $(".zgb").click(function () {
+                window.location.href="user/regist"
+
+            })
+        })
+
+    </script>
+
+</head>
+<body>
+<!--<div class="logo_dl">
+        <img src="images/logo_dl.jpg" alt="" width="206" height="70" style="float: left;"/>
+        <div class="name_dl">电力电气技术</br>专家系统</div>
+    </div>-->
+<div class="beijing">
+    <div style="margin-top:5px;height:85px" class="logo_dl">
+        <img src="../static/img/login/logo_dl.jpg" alt="" width="206" height="70" style="float: left;"/>
+        <div class="name_dl">华电龙源阁主题餐厅订餐小程序</div>
+    </div>
+
+    <div style="height:350px" class="mima">
+        <form id="loginForm">
+        <div class="yonghuming_dl">
+	        <div style="padding:5px 0px" class="dl_w">
+	            <div class="dl_w_one">
+	            	<input style="border-bottom: 1px #ccc solid;" type="text" class="text"  id="username" name="username" placeholder="请输入用户名"/>
+	            </div>
+	        </div>
+            
+			<div style="padding:5px 0px" class="dl_w">
+	            <div class="dl_w_one">
+	                <input type="password"  id="password" name="password"  class="password" placeholder="请输入密码"/>
+	            </div>
+            </div>
+            <div style="padding:5px 0px" class="dl_w">
+	            <div class="dl_w_one"><img onclick = "this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha"  class="captcha changeCaptcha pull-left margin-r-5"  width="80" height="34"  alt="验证码"/></div>
+	            <div style="margin-left: 14px;" class="dl_w_two">
+	                
+	                <input type="text" style="width: 100px;height:30px;" id="kaptcha" name="kaptcha" />
+	                <a href="javascript:void(0)" id="changeCaptcha">换一张</a>
+	            </div>
+			</div>
+        </div>
+
+        <div class="checkbox">
+            <!-- <input type="checkbox"  name="remember-me"><span>下次自动登录</span> -->
+            <a href="/resetPwd" class="cuowu_dl">修改密码</a>
+        </div>
+        </form>
+        <input type="button" onclick="onclickLoign()"  class="dl_button" value="登    录"/>
+    </div>
+</div>
+
+<script>
+    function onclickLoign() {
+        /*验证*/
+        if($("#loginForm").valid()){
+        	localStorage.setItem("username", $("#username").val());
+        	localStorage.setItem("password", $("#password").val());
+        	 
+            $.ajax({
+                type:"post",
+                url: "/api/login",
+                data: $("#loginForm").serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    if(data){
+                        if(data.code=="200"){
+                            if(data.isFirst == 0){
+                                //如果第一次登录则进入修改密码页面
+                                window.location = "/resetPwd";
+                            }else{
+                                //登录成功
+                                window.location = "/user/info";
+                            }
+
+                        }else if(data.code=="500"){
+                            App.showMessage("error", data. message, function(){
+                            })
+                        }else if(data.code=="202"){
+                            App.showMessage("error", "验证码错误!", function(){
+                            })
+                        }
+                    }
+
+                }
+            })
+        }
+    }
+
+    $(function(){
+    	
+    	if(localStorage.getItem("username")){
+    		$("#username").val(localStorage.getItem("username"))
+    	}
+    	
+    	if(localStorage.getItem("password")){
+    		$("#password").val(localStorage.getItem("password"))
+    	}
+    	
+    	$("#loginForm").validate({
+    		rules:{
+    			username:{
+    				required:true
+    			},
+    			password:{
+    				required:true
+    			},
+    			kaptcha:{
+    				required:true
+    			}
+    		},
+    		messages:{
+    			username:{
+    				required:"必填"
+    			},
+    			password:{
+    				required:"必填"
+    			},
+    			kaptcha:{
+    				required:"必填"
+    			}
+    		},
+    		errorPlacement:function(error,element) { 
+    			error.appendTo(element.parent())
+    	   },
+    	})
+    	
+    	
+	    //切换验证码
+	    $("#changeCaptcha").click(function () {
+	        var url =  "/defaultKaptcha?d="+new Date()*1;
+	        $(".captcha").attr("src", url);
+	    })
+    })
+
+</script>
+
+</body>
+</html>

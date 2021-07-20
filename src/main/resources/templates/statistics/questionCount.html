@@ -1,0 +1,166 @@
+<#include "../layout/layout.html">
+
+<@layout>
+<link type="text/css" rel="stylesheet" href="../../static/ceeemall/css/caozuojilu.css">
+<script type="text/javascript" src="../../static/js/jquery.ztree.all-3.5.js"></script>
+
+<#include "menu.html"/>
+<div class="con_right">
+    <div class="con_right_top">
+        <h1 class="dl_h1">题目数量
+            <!--<a href="tianjiacanshu.html"><input type="button" value="修改/新增参数"class="top_button"/></a>--></h1>
+
+        <div class="dl_blue"></div>
+
+    </div>
+    <div class="con_right_bottom padding_0">
+
+        <div class="con" style="width: 250px">
+            <ul class="ztree" id="categoryTree">
+
+            </ul>
+            <li style="color:#0066cc;font-size:18px;height:30px;line-height:30px;font-weight: bold;">总计:
+            	<span style="padding-right:5px;float:right;font-size:18px;height:30px;line-height:30px;" id="allCount">(0)</span>
+            </li>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+
+    /*进入页面默认加载目录树 和问题列表*/
+    $(function () {
+        $(document).attr("title","题目数量");
+        openMenu("htgl");//导航栏回显
+        openAdminMenu("questionStatis");/*目录添加颜色*/
+        loadAllCount();/*统计总个数*/
+        queryCategoryTree(categorySetting);/*统计单个数*/
+    })
+
+
+    /*加载总个数*/
+    function loadAllCount() {
+        $.ajax({
+            "type": "POST",
+            "url": "/statistics/allCount",
+            "dataType": "json",
+            "success": function (data) {
+                if (data == null) {
+                    return null;
+                }
+                $("#allCount").text("(" + data.data.allCount + ")");
+            }
+        })
+
+    }
+
+
+    //查询目录信息方法
+    function queryCategoryTree(categorySetting) {
+        $.ajax({
+            "type": "post",
+            "url": "/category/ztree",
+            "dataType": "json",
+            "success": function (data) {
+                zNodes = data;
+                var t = $("#categoryTree");
+                t = $.fn.zTree.init(t, categorySetting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+                var rootNode = zTree.getNodeByParam("id", 0);
+                zTree.expandNode(rootNode, true, false);
+                zTree.setting.edit.drag.isCopy = false;
+                zTree.setting.edit.drag.isMove = true;
+                zTree.setting.edit.drag.prev = true;
+                zTree.setting.edit.drag.inner = true;
+                zTree.setting.edit.drag.next = true;
+                /*加载目录下 题目的数量*/
+                 loadTreeCount();
+            }
+        });
+    }
+
+    /*加载目录树后题目的个数*/
+    function loadTreeCount() {
+        $.ajax({
+            "type": "POST",
+            "url": "/statistics/qeustionCount",
+            "dataType": "json",
+            "success": function (data) {
+                if (data == null) {
+                    return null;
+                }
+                var CategoryNumlist = data[0]["CategoryNumlist"];
+                var CategoryParentlist = data[0]["CategoryParentlist"];
+                var zTree = $.fn.zTree.getZTreeObj("categoryTree");
+
+
+                for (var key in CategoryParentlist) {
+                    zTree.expandNode(zTree.getNodeByParam("id", key, null));//展开指定节点
+                }
+                for (var key in CategoryNumlist) {
+                    $("#treeId" + key).text("(" + CategoryNumlist[key] + ")");
+                }
+
+            }
+        })
+
+    }
+
+    /* 分类类目树开始 */
+    var zTree;
+    /* 分类类目配置信息 */
+    var categorySetting = {
+        edit: {
+            enable: false
+        },
+        view: {
+            selectedMulti: true,
+            dblClickExpand: false,
+            showIcon: false,
+            showLine: true,
+            showTitle: true,
+            addDiyDom: addDiyDom,
+            fontCss: {'font-size': '13px;', 'color': '#0066c'}//统一设置样式
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id",
+                pIdKey: "pid",
+                rootPId: ""
+            }
+        },
+        callback: {
+        }
+    };
+
+
+    function addDiyDom(treeId, treeNode) {
+        var spaceWidth = 2;
+        var icoObj = $("#" + treeNode.tId + "_ico");
+        var contentObj = $("#" + treeNode.tId + "_span");
+        contentObj.attr("class", "tree-span");
+        var aContent = $("#" + treeNode.tId + "_a");
+
+        if (treeNode.level == 0) {
+            aContent.attr("class", "tree_a");
+        }
+        if (treeNode.level == 1) {
+            aContent.attr("class", "tree_a1");
+        }
+        if (treeNode.level == 2) {
+            aContent.attr("class", "tree_a2");
+        }
+        if (treeNode.level == 3) {
+            aContent.attr("class", "tree_a3");
+        }
+        if (treeNode.level > 4) {
+            aContent.attr("class", "tree_a4");
+        }
+
+        aContent.after("<span style='margin-top:3px;color:#0066cc;float:right' class='add-num' id='treeId" + treeNode.id + "' name=" + treeNode.level + ">(0)</span>");
+    }
+</script>
+</@layout>

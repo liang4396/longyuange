@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="/static/ceeemall/loginweb/css/zhuce.css" >
+    <script src="/static/ceeemall/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery.validate.js"></script>
+    <script>
+        $(function(){
+            $('.beijing').css('height',($(window).height()))
+        })
+
+        $(function(){
+            $('.text').focus(function(e) {
+                $(this).css('background','url("/static/img/login/xuanzhongrentou.png") no-repeat 0px 10px');
+
+            });
+            $('.text').blur(function(e) {
+
+                $(this).css('background','url("/static/img/login/rentou.png") no-repeat 0px 10px');
+            });
+
+            $('.tel').focus(function(e) {
+                $(this).css('background','url("/static/img/login/ltel.png") no-repeat 0px 10px');
+
+            });
+            $('.tel').blur(function(e) {
+
+                $(this).css('background','url("/static/img/login/tel.png") no-repeat 0px 10px');
+            });
+
+            $('.password').focus(function(e) {
+                $(this).css('background','url("/static/img/login/xuanzhongsuo.png") no-repeat 0px 10px');
+
+            });
+            $('.password').blur(function(e) {
+
+                $(this).css('background','url("/static/img/login/suo.png") no-repeat 0px 10px');
+            });
+
+
+
+
+
+
+            var timer="";
+            var nums=60;
+            var validCode=true;
+            $(".code").on('click',function(){
+                //发请求给后端发送验证码
+                var phoneNum =$('#phoneNum').val();
+                console.log(phoneNum)
+                $.ajax({
+                    url: "/user/sendCode",
+                    type: "POST",
+                    data: {
+                        phoneNum: phoneNum
+                    },
+                    datatype:  "json",
+
+                    success: function (data) {
+                        if (data.code == 20000){
+                            alert("短信发送成功");
+                        }else{
+                            alert("发送失败,请重新发送");
+                        }
+
+                    }
+
+                })
+                var code=$(this);
+                if(validCode){
+                    validCode=false;
+                    timer=setInterval(function(){
+                        if(nums>0){
+                            nums--;
+                            code.val(nums+"秒后重新发送");
+                            $('.code').attr('disabled','disabled')
+                        }
+                        else{
+                            clearInterval(timer);
+                            nums=60;
+                            validCode=true;
+                            code.removeClass("gray-bg");
+                            code.val("发送验证码");
+                            $('.code').attr('disabled',true)
+                        }
+                    },1000)
+                }
+
+
+            })
+
+
+
+
+            $(".dgb").click(function () {
+               var user = $('#regist').serialize();
+                /*data: $('#regist').serialize()+"&smsCode="+$("#smsCode").val(),*/
+
+               // console.log(user)
+                $.ajax({
+                    url: "/user/regist",
+                    type: "POST",
+                    data: $('#regist').serialize(),
+                    datatype: "json",
+                    success: function (data) {
+                        if(data.code==20000){
+                            console.log(data.message)
+                            window.location.href="/login/web"
+                        }else{
+                            console.log(data.message)
+                            alert("注册失败")
+                        }
+                    }
+                })
+
+
+
+
+            })
+
+
+
+
+        })
+        //todo 表单验证
+    </script>
+    <style>
+
+
+    </style>
+</head>
+<body>
+<!--<div class="logo_dl">
+        <img src="images/logo_dl.jpg" alt="" width="206" height="70" style="float: left;"/>
+        <div class="name_dl">电力电气技术</br>专家系统</div>
+    </div>-->
+<div class="beijing">
+    <div class="logo_dl">
+        <img src="/static/img/login/logo_dl.jpg" alt="" width="206" height="70" style="float: left;"/>
+        <div class="name_dl">电力王者知识库输入系统</div>
+    </div>
+    <div class="mima">
+        <form id="regist">
+        <div class="yonghuming_dl">
+            <div>
+                <input type="text" name="realname" class="text"placeholder="请填写真实姓名" />
+            </div>
+            <div>
+                <input type="text" id="phoneNum" class="tel" name="phoneNum" placeholder="请填写手机"/>
+                <!--<div class="code" >发送验证码</div>-->
+                <input type="button"  class="code"  value="发送验证码" />
+            </div>
+            <div>
+                <input type="text" name="smsCode" id="smsCode" class="tel" placeholder="请填写验证码" />
+
+            </div>
+            <div>
+                <input type="text" id="username" name="username" class="text" placeholder="请填写昵称"/>
+            </div>
+            <div>
+                <input type="password" id="password" value="" name="password" class="password" placeholder="请输入密码"/>
+            </div>
+            <div>
+                <input type="password" value=""  name="aginPassword" class="password" placeholder="请确认密码"/>
+            </div>
+        </div>
+        </form>
+
+        <input type="button" class="dl_button dgb"  value="完    成"/>
+        
+    </div>
+</div>
+</body>
+<script>
+    
+
+
+</script>
+</html>
